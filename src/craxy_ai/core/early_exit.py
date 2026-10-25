@@ -51,6 +51,8 @@ class EarlyExitClassifier:
         self.entropy_threshold = entropy_threshold
         self.total_layers = config.num_layers
 
+        # Intermediate LayerNorm to stabilize activation magnitudes
+        self.norm = torch.nn.LayerNorm(config.hidden_dim)
         # Compact intermediate exit projection weight
         self.exit_head = torch.nn.Linear(config.hidden_dim, 256, bias=False)
         # Initialize with deterministic weights
@@ -58,8 +60,9 @@ class EarlyExitClassifier:
 
     @property
     def memory_footprint_mb(self) -> float:
-        """Return memory footprint of the early exit linear head in megabytes."""
-        total_bytes = self.exit_head.weight.nelement() * 4  # float32 = 4 bytes
+        """Return memory footprint of the early exit linear head and norm in megabytes."""
+        total_elements = self.exit_head.weight.nelement() + self.norm.weight.nelement() + self.norm.bias.nelement()
+        total_bytes = total_elements * 4  # float32 = 4 bytes
         return total_bytes / (1024 * 1024)
 
     def calculate_entropy(self, probabilities: torch.Tensor) -> float:
@@ -90,17 +93,20 @@ class EarlyExitClassifier:
                 latency_saved_pct=0.0
             )
 
-        # Forward pass through compact exit head
+        # Forward pass through compact exit head (evaluating active decoding token)
+        target_vec = hidden_state[..., -1, :] if hidden_state.dim() >= 2 else hidden_state
+        last_token = target_vec.view(-1, self.config.hidden_dim)[-1]
         with torch.no_grad():
-            logits = self.exit_head(hidden_state.squeeze())
+            normalized_token = self.norm(last_token)
+            logits = self.exit_head(normalized_token)
             probs = F.softmax(logits, dim=-1)
             confidence, token_id = torch.max(probs, dim=-1)
             conf_val = float(confidence.item())
             token_val = int(token_id.item())
             norm_entropy = self.calculate_entropy(probs)
 
-        # Early exit gate: high confidence and low entropy
-        can_exit = (conf_val >= self.confidence_threshold) or (norm_entropy <= self.entropy_threshold)
+        # Early exit gate: both high confidence and low entropy required
+        can_exit = (conf_val >= self.confidence_threshold) and (norm_entropy <= self.entropy_threshold)
         saved_pct = ((self.total_layers - current_layer) / self.total_layers) * 100.0 if can_exit else 0.0
 
         return EarlyExitDecision(
