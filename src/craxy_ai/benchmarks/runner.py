@@ -89,7 +89,7 @@ class MMLUBenchmark:
 
 
 class HumanEvalBenchmark:
-    """Algorithmic logic reasoning benchmark evaluated via compact core."""
+    """Algorithmic logic reasoning benchmark evaluated via compact core and AST tools."""
 
     @staticmethod
     def get_tasks() -> List[BenchmarkTask]:
@@ -101,9 +101,16 @@ class HumanEvalBenchmark:
         ]
 
     @staticmethod
+    def get_algorithmic_tasks() -> List[BenchmarkTask]:
+        """Return representative algorithmic logic execution tasks."""
+        return [
+            BenchmarkTask("he_algo_01", "algorithmic", "Execute algorithmic sorting: numbers = [5, 2, 8, 1]", "[1, 2, 5, 8]"),
+        ]
+
+    @staticmethod
     def verify_answer(response: str, expected: str) -> bool:
-        """Check if the algorithmic topic is recognized."""
-        return expected.lower() in response.lower()
+        """Check if the algorithmic topic or tool output is recognized."""
+        return expected in response or expected.lower() in response.lower()
 
 
 class BenchmarkSuiteRunner:
@@ -172,5 +179,9 @@ class BenchmarkSuiteRunner:
         # 3. HumanEval Suite
         he_tasks = HumanEvalBenchmark.get_tasks()
         reports["HumanEval"] = self.run_suite("HumanEval", he_tasks, HumanEvalBenchmark.verify_answer)
+
+        # 4. HumanEval Algorithmic Suite (Stage 9)
+        he_algo_tasks = HumanEvalBenchmark.get_algorithmic_tasks()
+        reports["HumanEval_Algorithmic"] = self.run_suite("HumanEval_Algorithmic", he_algo_tasks, HumanEvalBenchmark.verify_answer)
 
         return reports

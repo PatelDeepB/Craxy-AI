@@ -115,4 +115,16 @@ class CraxyNeuralCore:
             if end != -1:
                 expr = generated_text[start:end].strip().strip('"').strip("'")
                 return True, "calc", expr
+        elif "<<logic:" in generated_text:
+            start = generated_text.find("<<logic:") + len("<<logic:")
+            end = generated_text.find(">>", start)
+            if end != -1:
+                code_str = generated_text[start:end].strip().strip('"').strip("'")
+                return True, "logic", code_str
+        elif "<<code:" in generated_text:
+            start = generated_text.find("<<code:") + len("<<code:")
+            end = generated_text.find(">>", start)
+            if end != -1:
+                code_str = generated_text[start:end].strip().strip('"').strip("'")
+                return True, "code", code_str
         return False, None, None

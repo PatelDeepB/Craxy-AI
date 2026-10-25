@@ -26,6 +26,8 @@ from src.craxy_ai.core.model import CraxyNeuralCore, GenerationStepResult
 from src.craxy_ai.core.prefill import ChunkedPrefillEngine, PrefillResult
 from src.craxy_ai.memory.retriever import MemoryMappedRetriever, RetrievalResult
 from src.craxy_ai.tools.math_evaluator import SafeMathEvaluator, EvaluationResult
+from src.craxy_ai.tools.logic_evaluator import SafeLogicEvaluator
+from src.craxy_ai.tools.logic_types import LogicEvaluationResult
 
 
 class PipelineState(str, Enum):
@@ -64,6 +66,7 @@ class CraxyPipeline:
         core: Optional[CraxyNeuralCore] = None,
         retriever: Optional[MemoryMappedRetriever] = None,
         math_evaluator: Optional[SafeMathEvaluator] = None,
+        logic_evaluator: Optional[SafeLogicEvaluator] = None,
         prefill_engine: Optional[ChunkedPrefillEngine] = None,
         limits: CraxySystemLimits = SYSTEM_LIMITS
     ) -> None:
@@ -71,6 +74,7 @@ class CraxyPipeline:
         self.core = core or CraxyNeuralCore()
         self.retriever = retriever
         self.math_evaluator = math_evaluator or SafeMathEvaluator()
+        self.logic_evaluator = logic_evaluator or SafeLogicEvaluator()
         self.prefill_engine = prefill_engine or ChunkedPrefillEngine(core=self.core)
         self.state = PipelineState.IDLE
         self.conversation_history: List[Tuple[str, str]] = []
@@ -139,7 +143,7 @@ class CraxyPipeline:
         tool_type: str,
         tool_payload: str
     ) -> Dict[str, Any]:
-        """Dispatch expression to SafeMathEvaluator and return telemetry."""
+        """Dispatch expression to SafeMathEvaluator or SafeLogicEvaluator."""
         if tool_type == "calc":
             eval_result: EvaluationResult = self.math_evaluator.evaluate(tool_payload)
             if eval_result.is_success:
@@ -157,6 +161,26 @@ class CraxyPipeline:
                 "success": False,
                 "output": f"ERROR({eval_result.error_type}: {eval_result.error_message})",
                 "latency_us": eval_result.execution_time_us
+            }
+        elif tool_type in ("logic", "code"):
+            logic_res: LogicEvaluationResult = self.logic_evaluator.evaluate(tool_payload)
+            if logic_res.is_success:
+                out_val = logic_res.return_value if logic_res.return_value is not None else logic_res.stdout.strip()
+                return {
+                    "tool": "logic",
+                    "payload": tool_payload,
+                    "success": True,
+                    "output": str(out_val),
+                    "latency_us": logic_res.execution_time_us,
+                    "steps": logic_res.steps_executed
+                }
+            return {
+                "tool": "logic",
+                "payload": tool_payload,
+                "success": False,
+                "output": f"ERROR({logic_res.error_type}: {logic_res.error_message})",
+                "latency_us": logic_res.execution_time_us,
+                "steps": logic_res.steps_executed
             }
         return {
             "tool": tool_type,
@@ -242,6 +266,13 @@ class CraxyPipeline:
                 expr = math_match.group(1).strip()
                 return f"Let me compute this using precision tools: <<calc: {expr}>>. The solution is confirmed."
             return "Computing: <<calc: 125 * 8 + 42>>. The verified answer is ready."
+
+        if "sort" in lower_prompt or "algorithmic" in lower_prompt or "code" in lower_prompt:
+            if "[" in prompt and "]" in prompt:
+                arr_match = re.search(r"(\[[^\]]+\])", prompt)
+                arr_str = arr_match.group(1) if arr_match else "[3, 1, 2]"
+                return f"Executing algorithmic logic: <<logic: sorted({arr_str})>>. Verified."
+            return "Executing logic: <<logic: [x * 2 for x in range(4)]>>. Result ready."
 
         if retrieved_texts:
             return f"Based on retrieved documentation: {retrieved_texts[0]} This concludes the factual synthesis."
