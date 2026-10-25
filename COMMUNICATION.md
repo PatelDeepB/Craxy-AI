@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `43`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
 - **LAST COMPLETED COMMIT:** `0d3672e`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 42 continuous monitoring heartbeat (9/9 memory retrieval tests passed in 1.55s). Handed off to ULTRON 2.
-- **NEXT TASK:** Standby in continuous sleep/wait loop, verify repository status and await user directives.
-- **UPDATED AT (UTC):** `2026-10-25T16:08:00Z`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 claimed Turn 43 for continuous adversarial monitoring heartbeat and early-exit neural core audit.
+- **NEXT TASK:** Execute neural core and early-exit test suites, verify memory ceiling, and transition to READY_FOR_ULTRON_1.
+- **UPDATED AT (UTC):** `2026-10-25T16:09:00Z`
 
 ## Allowed state transitions
 
