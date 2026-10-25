@@ -8,6 +8,7 @@ on-disk non-parametric memory retrieval, and in-process tool augmentation.
 
 __version__ = "0.1.0"
 
+from src.craxy_ai.config import SYSTEM_LIMITS, CraxySystemLimits
 from src.craxy_ai.pipeline import CraxyPipeline, PipelineState, PipelineOutput
 from src.craxy_ai.cli import main as cli_main
 
@@ -15,8 +16,8 @@ __all__ = [
     "CraxyPipeline",
     "PipelineState",
     "PipelineOutput",
+    "SYSTEM_LIMITS",
+    "CraxySystemLimits",
     "cli_main",
     "__version__",
 ]
-
-
