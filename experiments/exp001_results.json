@@ -1,0 +1,103 @@
+{
+  "experiment_id": "EXP-001",
+  "timestamp_utc": "2026-10-25T11:15:52Z",
+  "runtime_profile": {
+    "base_python_rss_mb": 190.19140625,
+    "torch_loaded_rss_mb": 190.19140625,
+    "torch_overhead_mb": 190.19140625,
+    "available_budget_mb": 1857.80859375
+  },
+  "kv_cache_scaling": [
+    {
+      "context_length": 512.0,
+      "precision": "fp16",
+      "bytes_per_elem": 2.0,
+      "theoretical_total_mb": 64.0,
+      "layer_tensor_mb": 2.0,
+      "rss_delta_mb": 2.96
+    },
+    {
+      "context_length": 512.0,
+      "precision": "int8",
+      "bytes_per_elem": 1.0,
+      "theoretical_total_mb": 32.0,
+      "layer_tensor_mb": 1.0,
+      "rss_delta_mb": 0.05
+    },
+    {
+      "context_length": 1024.0,
+      "precision": "fp16",
+      "bytes_per_elem": 2.0,
+      "theoretical_total_mb": 128.0,
+      "layer_tensor_mb": 4.0,
+      "rss_delta_mb": 2.0
+    },
+    {
+      "context_length": 1024.0,
+      "precision": "int8",
+      "bytes_per_elem": 1.0,
+      "theoretical_total_mb": 64.0,
+      "layer_tensor_mb": 2.0,
+      "rss_delta_mb": 2.05
+    },
+    {
+      "context_length": 2048.0,
+      "precision": "fp16",
+      "bytes_per_elem": 2.0,
+      "theoretical_total_mb": 256.0,
+      "layer_tensor_mb": 8.0,
+      "rss_delta_mb": 6.0
+    },
+    {
+      "context_length": 2048.0,
+      "precision": "int8",
+      "bytes_per_elem": 1.0,
+      "theoretical_total_mb": 128.0,
+      "layer_tensor_mb": 4.0,
+      "rss_delta_mb": 0.0
+    },
+    {
+      "context_length": 4096.0,
+      "precision": "fp16",
+      "bytes_per_elem": 2.0,
+      "theoretical_total_mb": 512.0,
+      "layer_tensor_mb": 16.0,
+      "rss_delta_mb": 8.0
+    },
+    {
+      "context_length": 4096.0,
+      "precision": "int8",
+      "bytes_per_elem": 1.0,
+      "theoretical_total_mb": 256.0,
+      "layer_tensor_mb": 8.0,
+      "rss_delta_mb": 8.05
+    },
+    {
+      "context_length": 8192.0,
+      "precision": "fp16",
+      "bytes_per_elem": 2.0,
+      "theoretical_total_mb": 1024.0,
+      "layer_tensor_mb": 32.0,
+      "rss_delta_mb": 24.0
+    },
+    {
+      "context_length": 8192.0,
+      "precision": "int8",
+      "bytes_per_elem": 1.0,
+      "theoretical_total_mb": 512.0,
+      "layer_tensor_mb": 16.0,
+      "rss_delta_mb": 0.0
+    }
+  ],
+  "streaming_metrics": {
+    "num_layers": 32.0,
+    "layer_size_mb": 64.0,
+    "total_model_disk_size_mb": 2048.0,
+    "peak_rss_mb": 288.39,
+    "min_rss_mb": 288.38,
+    "rss_drift_mb": 0.01,
+    "avg_layer_load_time_ms": 50.83,
+    "read_throughput_mb_s": 1259.11,
+    "full_pass_time_sec": 1.627
+  }
+}
