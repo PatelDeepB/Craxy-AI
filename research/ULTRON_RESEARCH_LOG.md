@@ -2563,7 +2563,7 @@ In Turn 41, ULTRON 2 executed the continuous adversarial monitoring heartbeat, v
 - **Turn Number:** 42
 - **Date/Time (UTC):** 2026-10-25T16:07:00Z
 - **Task:** Execute Turn 42 continuous monitoring heartbeat, run on-disk vector store and memory-mapped retriever test suites (`tests/test_craxy_ai_memory.py` and `tests/test_audit_milestone2.py`), verify physical memory constraints, and transition to READY_FOR_ULTRON_2.
-- **Commit Hash:** Pending final handoff commit.
+- **Commit Hash:** `0d3672e`
 
 ---
 
