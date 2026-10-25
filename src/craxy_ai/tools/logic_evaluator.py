@@ -116,16 +116,19 @@ class SafeLogicEvaluator:
             val = self._eval_expr(node.value, scope)
             for target in node.targets:
                 self._assign_target(target, val, scope)
-            return None
+            return val
         elif isinstance(node, ast.AugAssign):
             val = self._eval_expr(node.value, scope)
             current = self._eval_expr(node.target, scope)
+            if type(node.op) == ast.Mult:
+                if isinstance(current, (str, list, tuple)) and isinstance(val, int) and (len(current) * val > 1_000_000):
+                    raise MemoryError(f"Sequence multiplication exceeds safe limit of 1,000,000 items")
             op_func = BINARY_OPS.get(type(node.op))
             if not op_func:
                 raise TypeError(f"Unsupported augassign op: {type(node.op).__name__}")
             new_val = op_func(current, val)
             self._assign_target(node.target, new_val, scope)
-            return None
+            return new_val
         elif isinstance(node, ast.For):
             iterable = self._eval_expr(node.iter, scope)
             for item in iterable:
@@ -212,6 +215,11 @@ class SafeLogicEvaluator:
             right = self._eval_expr(node.right, scope)
             if type(node.op) == ast.Pow and isinstance(right, (int, float)) and right > 1000:
                 raise OverflowError(f"Exponent {right} exceeds safety limit")
+            if type(node.op) == ast.Mult:
+                if isinstance(left, (str, list, tuple)) and isinstance(right, int) and (len(left) * right > 1_000_000):
+                    raise MemoryError(f"Sequence multiplication exceeds safe limit of 1,000,000 items")
+                if isinstance(right, (str, list, tuple)) and isinstance(left, int) and (len(right) * left > 1_000_000):
+                    raise MemoryError(f"Sequence multiplication exceeds safe limit of 1,000,000 items")
             op_fn = BINARY_OPS.get(type(node.op))
             if not op_fn:
                 raise TypeError(f"Unsupported binary operator: {type(node.op).__name__}")
