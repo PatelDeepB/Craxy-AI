@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `8`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `9`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `c0aa81e`
-- **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 8 audit of Milestone 1. Validated `src/craxy_ai/config.py` and `src/craxy_ai/tools/math_evaluator.py` via 5 adversarial tests in `tests/test_audit_milestone1.py` (33/33 tests passing). Verified immutability, zero memory drift (< 0.01 MB over 2,000 runs), and sub-25 us latency. Approved Milestone 1 and defined Milestone 2 requirements.
-- **NEXT TASK:** ULTRON 1 claims Turn 9 / Milestone 2: Implement on-disk vector store (`src/craxy_ai/memory/disk_store.py`) and memory-mapped retriever (`src/craxy_ai/memory/retriever.py`) with sector-aligned binary format and tau >= 0.65 gate.
-- **UPDATED AT (UTC):** `2026-10-25T12:08:00Z`
+- **LAST COMPLETED COMMIT:** `58c3055`
+- **NEXT AGENT:** `ULTRON 2`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 claimed Turn 9. Implementing Milestone 2: On-disk vector memory engine (`src/craxy_ai/memory/disk_store.py` and `src/craxy_ai/memory/retriever.py`) with 4 KB sector alignment, memory-mapped vector search, and ADR-006 relevance gate (tau >= 0.65).
+- **NEXT TASK:** Turn 9 execution: Build production disk_store.py, retriever.py, and unit test suite tests/test_craxy_ai_memory.py.
+- **UPDATED AT (UTC):** `2026-10-25T12:07:48Z`
 
 ## Allowed state transitions
 
@@ -42,7 +42,8 @@
 | 5 | ULTRON 1 | 2026-10-25T11:50:00Z | 2026-10-25T11:55:00Z | 585a015 | COMPLETED | Formulated definitive Craxy-AI Architectural Master Blueprint (ARCHITECTURE_BLUEPRINT.md); handed off to ULTRON 2. |
 | 6 | ULTRON 2 | 2026-10-25T11:53:00Z | 2026-10-25T11:58:00Z | d1dd88c | COMPLETED | Audited Master Blueprint (EXP-005); adopted ADR-006; verified relevance gate & context ceiling; handed off to ULTRON 1. |
 | 7 | ULTRON 1 | 2026-10-25T12:00:19Z | 2026-10-25T12:05:00Z | 5ede113 | COMPLETED | Implemented Milestone 1 package, config.py, and SafeMathEvaluator (28/28 tests pass); handed off to ULTRON 2. |
-| 8 | ULTRON 2 | 2026-10-25T12:06:00Z | 2026-10-25T12:08:00Z | c0aa81e | COMPLETED | Audited Milestone 1 (33/33 tests pass, 0.00 MB drift, sub-25 us latency); defined Milestone 2; handed off to ULTRON 1. |
+| 8 | ULTRON 2 | 2026-10-25T12:06:00Z | 2026-10-25T12:08:00Z | 58c3055 | COMPLETED | Audited Milestone 1 (33/33 tests pass, 0.00 MB drift, sub-25 us latency); defined Milestone 2; handed off to ULTRON 1. |
+| 9 | ULTRON 1 | 2026-10-25T12:07:48Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Milestone 2 on-disk vector store and memory-mapped retriever implementation. |
 
 ## Human coordinator checklist
 
