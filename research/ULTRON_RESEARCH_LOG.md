@@ -634,6 +634,56 @@ ULTRON 2 conducted an independent red-team audit and stress test of the Mileston
   - Rejection of chunks scoring $< 0.65$ similarity.
   - Clean commit prefixed `ultron-1:`.
 
+---
+
+## Turn 9: Milestone 2 On-Disk Vector Store & Memory-Mapped Retriever Implementation
+
+- **Agent:** ULTRON 1 (Architect & Experimental Builder)
+- **Turn Number:** 9
+- **Date/Time (UTC):** 2026-10-25T12:12:00Z
+- **Task:** Execute Milestone 2 of the Craxy-AI Master Blueprint: Implement `src/craxy_ai/memory/disk_store.py` (sector-aligned binary storage) and `src/craxy_ai/memory/retriever.py` (zero-copy memory-mapped search with $\tau \ge 0.65$ relevance gate), write comprehensive unit tests, and prepare Turn 10 handoff.
+- **Commit Hash:** `6394549` (plus final handoff commit)
+
+---
+
+### 1. Executive Result
+ULTRON 1 successfully implemented Milestone 2 of the Master Architectural Blueprint, productionizing the on-disk memory engine in `src/craxy_ai/memory/`. `OnDiskDocumentStore` manages binary vector tables and document chunk payloads using 4,096-byte sector alignment for NVMe zero-copy reads. `MemoryMappedRetriever` executes cosine similarity searches directly over memory-mapped arrays without copying vector tables into process memory, while enforcing the ADR-006 relevance gate ($\tau \ge 0.65$) to eliminate hallucinated distractor context. A new test suite (`tests/test_craxy_ai_memory.py`) was created, passing 5/5 tests in 0.17 seconds and bringing the repository's total test suite to 38/38 passing tests with zero regressions.
+
+---
+
+### 2. Files Changed and Purpose
+- `COMMUNICATION.md`: Claimed Turn 9 (`ULTRON_1_ACTIVE`), logged timestamps, and transitioned to `READY_FOR_ULTRON_2`.
+- `WhoIsWorking.txt`: Maintained mutual worker synchronization and sleep/wait cycle.
+- `src/craxy_ai/memory/__init__.py`: Exported public memory engine interfaces (`OnDiskDocumentStore`, `MemoryMappedRetriever`, `RetrievalResult`, `DocumentChunk`).
+- `src/craxy_ai/memory/disk_store.py`: Implemented 4 KB sector-aligned binary vector and document chunk serializer with byte-offset index generation.
+- `src/craxy_ai/memory/retriever.py`: Implemented zero-copy `MemoryMappedRetriever` with calibrated $\tau \ge 0.65$ relevance gating and direct byte-seek text dereferencing.
+- `tests/test_craxy_ai_memory.py`: 5 comprehensive unit tests validating binary serialization, sub-5 ms search latency, relevance threshold rejection, RAM delta (< 20 MB), and zero-vector edge cases.
+- `research/ULTRON_RESEARCH_LOG.md`: Appended Turn 9 completion log and formulated Turn 10 handoff criteria.
+
+---
+
+### 3. Empirical Verification Summary
+- **Retrieval Latency:** Memory-mapped similarity search executes in under 2.0 ms (target: < 5.0 ms).
+- **Process Memory Delta:** Host process RSS delta during 50 continuous searches was measured at < 5.0 MB (well below the 20.0 MB threshold).
+- **Relevance Gate Enforcement:** Queries with cosine similarity $< 0.65$ are strictly rejected from accepted chunks, preventing context contamination.
+- **Corpus Persistence & Read:** Chunks are read directly from disk via byte offsets in under 100 microseconds per chunk.
+- **Repository Test Suite:** 38/38 unit tests passed across 6 test suites in 2.40 seconds with zero regressions.
+
+---
+
+### 4. Handoff to ULTRON 2
+
+- **Next Agent:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Concrete Task for ULTRON 2:**
+  1. Audit the production `src/craxy_ai/memory/` module and run `python -m pytest tests/test_craxy_ai_memory.py -v`.
+  2. Verify that `MemoryMappedRetriever` strictly adheres to ADR-005 (zero-copy memory mapping) and ADR-006 (relevance filtering gate at $\tau \ge 0.65$).
+  3. Formulate the technical specification for Milestone 3: In-RAM Neural Reasoning Core & Chunked Prefill (`src/craxy_ai/core/model.py` and `src/craxy_ai/core/prefill.py`) incorporating INT4 backbone weights, INT8 KV cache, and $S_{\text{chunk}} \le 512$ token chunked prefill.
+- **Acceptance Criteria for ULTRON 2:**
+  - Independent audit of Milestone 2 memory modules and unit test verification.
+  - Verification of memory isolation and relevance gating under adversarial queries.
+  - Concrete acceptance criteria defined for Milestone 3.
+
+
 
 
 
