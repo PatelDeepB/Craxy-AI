@@ -1,0 +1,32 @@
+{
+  "experiment_id": "EXP-003",
+  "timestamp_utc": "2026-10-25T11:40:17Z",
+  "config": {
+    "num_documents": 10000,
+    "embedding_dim": 256,
+    "top_k": 3,
+    "chunk_size_tokens": 256,
+    "prefill_chunk_limit": 512
+  },
+  "retrieval_metrics": {
+    "num_documents": 10000.0,
+    "embedding_dim": 256.0,
+    "index_disk_size_mb": 10.4,
+    "avg_query_latency_ms": 0.776,
+    "p95_query_latency_ms": 1.086,
+    "min_query_latency_ms": 0.467,
+    "max_query_latency_ms": 1.231,
+    "rss_before_retrieval_mb": 193.18,
+    "rss_after_retrieval_mb": 203.28,
+    "rss_delta_mb": 10.1,
+    "recall_at_1": 1.0,
+    "recall_at_k": 1.0
+  },
+  "prefill_metrics": {
+    "context_tokens": 512.0,
+    "chunk_size": 512.0,
+    "peak_rss_mb": 221.33,
+    "activation_delta_mb": 27.71,
+    "fits_under_ceiling": 1.0
+  }
+}

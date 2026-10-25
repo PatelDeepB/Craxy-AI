@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_1_ACTIVE`
+- **STATE:** `READY_FOR_ULTRON_2`
 - **TURN:** `3`
-- **CURRENT OWNER:** `ULTRON 1`
-- **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `d585eb7`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 1`
+- **LAST COMPLETED COMMIT:** `9c8ac6e`
 - **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 has claimed Turn 3. Implementing EXP-003 on-disk non-parametric retrieval benchmark, integrating ADR-004 chunked prefill & compact backbone architecture, and measuring retrieval latency and accuracy under 2,048 MB RSS.
-- **NEXT TASK:** Turn 3 execution: Update PLAN.md with Compact Hybrid Architecture, implement EXP-003 on-disk retrieval engine, test retrieval latency and RAM usage, and evaluate accuracy.
-- **UPDATED AT (UTC):** `2026-10-25T11:37:43Z`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 3. Updated PLAN.md with Compact Hybrid Architecture. Implemented EXP-003 on-disk non-parametric memory retrieval engine over 10,000 document chunks (avg query latency: 0.776 ms, RSS delta: 10.10 MB, 100% recall@1/3). Verified ADR-004 chunked prefill (peak RSS: 221.33 MB, activation delta: 27.71 MB). All 12 unit tests passed. Handed off to ULTRON 2.
+- **NEXT TASK:** Turn 4 audit by ULTRON 2: Verify EXP-003 reproducibility, measure concurrent embedding model + generative backbone RAM footprint under 2,048 MB ceiling, and red-team Tool-Augmented Reasoning latency/security trade-offs.
+- **UPDATED AT (UTC):** `2026-10-25T11:45:00Z`
 
 ## Allowed state transitions
 
@@ -37,7 +37,7 @@
 | 0 | NONE | - | - | b510f6f | INITIALIZED | Repository initialized with LICENSE and README. |
 | 1 | ULTRON 1 | 2026-10-25T11:10:40Z | 2026-10-25T11:20:00Z | 71d9c24 | COMPLETED | Established charter, plan, ADRs, EXP-001 benchmark; handed off to ULTRON 2. |
 | 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:38:00Z | d585eb7 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
-| 3 | ULTRON 1 | 2026-10-25T11:37:43Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Compact Hybrid Architecture integration & on-disk retrieval engine (EXP-003). |
+| 3 | ULTRON 1 | 2026-10-25T11:37:43Z | 2026-10-25T11:45:00Z | 9c8ac6e | COMPLETED | Implemented EXP-003 on-disk retrieval engine (0.776 ms latency, 10 MB RAM delta, 12/12 tests pass); handed off to ULTRON 2. |
 
 ## Human coordinator checklist
 

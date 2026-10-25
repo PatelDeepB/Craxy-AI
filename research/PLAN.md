@@ -68,49 +68,46 @@ We survey peer-reviewed literature, preprints, and open-source implementations a
 
 ## 3. Architectural Candidate Matrix
 
-We identify five core technical pathways that leverage 100 GB storage while respecting 2 GB RAM:
+We identify five core technical pathways that leverage 100 GB storage while respecting 2 GB RAM, updated with EXP-001 and EXP-002 empirical findings:
 
-| Approach | Architecture Description | RAM Footprint | Storage Footprint | Primary Bottleneck | Quality Potential |
+| Approach | Architecture Description | RAM Footprint | Storage Footprint | Primary Bottleneck | Status & Quality Potential |
 |---|---|---|---|---|---|
-| **A: Sequential Layer Streaming** | Full 70B/100B dense model on NVMe (4-bit, ~40-60 GB). Stream one layer at a time into a 500 MB RAM buffer. | 1.0 - 1.5 GB | 50 - 70 GB | Disk I/O bandwidth (PCIe bus) | Exact 100B parity, but low token/s |
-| **B: Sparse MoE with Expert Paging** | 80B-100B MoE model (e.g. 64 experts, top-2 active). Attention backbone in RAM, active experts streamed from SSD. | 1.2 - 1.8 GB | 45 - 80 GB | Expert prefetching & routing latency | High (approaching 100B MoE) |
-| **C: Non-Parametric Memory Engine** | Compact 1.5B-3B core reasoner in RAM (~1.0 GB) + 80 GB on-disk knowledge index (DiskANN / dense vectors). | 1.3 - 1.7 GB | 60 - 90 GB | Retrieval quality & reasoning gap of 1.5B | High on knowledge/MMLU, moderate on complex logic |
-| **D: Ultra-Quantized Ternary + Speculative Cascade** | BitNet b1.58 (7B ternary in 1.4 GB RAM) as fast draft generator, verified against on-disk streamed MoE layers. | 1.5 - 1.9 GB | 50 - 90 GB | Verification throughput & KV cache pressure | High |
-| **E: Naive In-Memory Small Model** | Standard 1B-3B model loaded directly into RAM. | 0.8 - 1.8 GB | 1 - 3 GB | Fails charter: cannot match 100B quality | Fails Charter Target |
+| **A: Sequential Layer Streaming** | Full 70B/100B dense model on NVMe (4-bit, ~40-60 GB). Stream one layer at a time into RAM buffer. | 1.0 - 1.5 GB | 50 - 70 GB | NVMe I/O bandwidth (1,259 MB/s = 32 s/token) | **REFUTED (EXP-001):** Mathematically too slow for interactive use. |
+| **B: Naive 70B MoE Offloading** | 70B-100B MoE with shared attention backbone in RAM, active FFN experts on SSD. | 5.0 - 12.0 GB | 45 - 80 GB | Shared attention backbone exceeds 2 GB RAM (Llama-70B backbone is 11.2 GB in INT4) | **REFUTED (EXP-002):** Fails 2 GB RAM budget ceiling. |
+| **B2: Compact MoE (Paged Experts)** | Compact backbone (params <= 1.5B, dim <= 2048, ~286 MB INT4) in RAM + 64 experts on SSD (2 active per layer). | 1.2 - 1.6 GB | 30 - 60 GB | Non-contiguous NVMe expert read latency (6.25 ms/expert) | **VIABLE:** High potential, pending compute pipelining. |
+| **C: Non-Parametric Memory Engine** | Compact 1.5B-3B core reasoner in RAM (~0.8-1.2 GB) + 60-80 GB on-disk knowledge index (DiskANN / dense vectors) + Tool Execution. | 1.1 - 1.5 GB | 60 - 90 GB | Reasoning depth of 1.5B base; solved via Python tool use for math/logic | **PRIMARY CANDIDATE (Turn 3):** Highest probability of achieving charter parity. |
+| **D: Ultra-Quantized Ternary Reasoner** | BitNet b1.58 (7B ternary in ~1.4 GB RAM) with integer-addition kernels + on-disk retrieval index. | 1.5 - 1.8 GB | 10 - 50 GB | Lack of mature ternary AVX2/NEON runtime kernels | **RESERVE CANDIDATE:** High potential once ternary runtimes mature. |
 
 ---
 
 ## 4. Staged Research Roadmap
 
-### Stage 0: Ground Truth Memory Budget & Streaming Feasibility (Turn 1 - Active)
-- **Objective:** Establish empirical memory accounting model and test NVMe sequential layer streaming mechanics on the local environment.
-- **Hypothesis:** A single transformer layer buffer can be dynamically populated and recycled in memory with zero memory leak, proving that $M_{\text{weights}}$ can be bounded to a single layer size $M_{\text{layer}}$ rather than total model size $M_{\text{total}}$.
+### Stage 0: Ground Truth Memory Budget & Streaming Feasibility (Turn 1 - COMPLETED)
+- **Status:** COMPLETED (EXP-001, commit `285b2bb`).
+- **Outcome:** Measured baseline RSS (190.19 MB), proved buffer recycling with 0.01 MB drift over 32 layers. Refuted naive dense streaming due to 1,259 MB/s I/O latency bound.
+
+### Stage 1: Memory Wall, Activation Surges, & MoE Backbone Bounds (Turn 2 - COMPLETED)
+- **Status:** COMPLETED (EXP-002, commit `7911978` / `d585eb7`).
+- **Outcome:** Discovered prefill activation surge (+276 MB at 4k context) mandating chunked prefill ($S \le 512$, ADR-004). Mathematically refuted naive 70B MoE offloading due to 11.2 GB backbone. Verified NVMe random expert read speed (2,526 MB/s, 2.47 tokens/s).
+
+### Stage 2: On-Disk Non-Parametric Memory Engine (Turn 3 - Active)
+- **Objective:** Prototype and benchmark an on-disk non-parametric memory retrieval engine (DiskANN / FAISS disk index simulation over 10,000 document chunks) paired with a lightweight reasoning harness under strict <= 2,048 MB RSS.
+- **Hypothesis:** By memory-mapping an on-disk dense vector index and document store, nearest-neighbor retrieval can execute in < 50 ms with < 100 MB RAM delta, providing 100B-grade factual recall to a compact reasoning model while honoring ADR-004 chunked prefill.
 - **Deliverables:**
-  * Memory benchmark script measuring Python/PyTorch runtime RSS, KV cache scaling, and layer streaming I/O latency.
-  * Formal Research Charter and Staged Plan.
+  * Implementation of `experiments/exp003_non_parametric_retrieval.py`.
+  * Unit test suite `tests/test_non_parametric_retrieval.py`.
+  * Measurements: Peak RSS, query latency, chunked prefill activation stability, and factual QA accuracy.
 
-### Stage 1: Memory Wall & I/O Bandwidth Bounds (Turns 2-3)
-- **Objective:** Mathematically and experimentally bound the maximum possible tokens/second for layer streaming vs expert paging given PCIe NVMe read throughput.
-- **Key Question:** For a 70B model in 4-bit (~35 GB total, ~450 MB per layer across 80 layers), how fast can layers be streamed on modern SSDs (3,000 - 7,000 MB/s)?
-  * Analysis: 35 GB / 5,000 MB/s = 7 seconds per token (0.14 tokens/s) for full sequential streaming.
-  * Conclusion: Pure dense layer streaming is too slow for interactive use without activation reuse or MoE sparsity!
-- **Deliverables:** Analytical latency model comparing Dense Streaming vs Sparse MoE Paging vs Retrieval-Augmented Generation.
+### Stage 3: Tool-Augmented Multi-Step Reasoning Engine (Turns 4-5)
+- **Objective:** Bridge the reasoning gap of compact models on GSM8K and HumanEval by integrating sandboxed Python code execution and multi-step verifiers.
+- **Deliverables:** Sandboxed tool execution loop executing under 2,048 MB RSS.
 
-### Stage 2: MoE Expert Swapping & Flash Activation Sparsity (Turns 4-6)
-- **Objective:** Prototype selective expert streaming. In an MoE model, only 2 experts out of 32 or 64 are read per layer.
-  * Analysis: 2 active experts = ~15-25 MB per layer. Total I/O per token = 80 layers * 20 MB = 1.6 GB. At 5,000 MB/s, latency = ~320 ms per token (~3 tokens/second).
-- **Deliverables:** Prototype of an on-disk MoE expert loader with LRU cache in RAM.
+### Stage 4: Integrated Compact Hybrid Prototype (Turns 6-8)
+- **Objective:** Combine the compact reasoner, on-disk knowledge index, and tool execution engine into a unified local inference runtime.
+- **Deliverables:** End-to-end prototype running on consumer CPU within 2,048 MB RSS and 100 GB storage.
 
-### Stage 3: Retrieval-Augmented Non-Parametric Engine (Turns 7-9)
-- **Objective:** Evaluate combining a 1.5B-3B compact reasoning model with an on-disk 50-80 GB dense vector index (DiskANN / FAISS on-disk).
-- **Deliverables:** Accuracy comparison on MMLU / GSM8K with vs without on-disk retrieval augmentation.
-
-### Stage 4: Integrated Prototype Synthesis (Turns 10-12)
-- **Objective:** Integrate the winning architectural paradigm (e.g. Hybrid MoE + On-Disk Knowledge Index) into a unified inference runtime.
-- **Deliverables:** End-to-end inference pipeline executing under 2,048 MB RSS.
-
-### Stage 5: Formal Charter Verification & Red-Team Audit (Turns 13-14)
-- **Objective:** Comprehensive evaluation against Tier 1, Tier 2, and Tier 3 acceptance criteria across MMLU, GSM8K, HumanEval, and ARC-Challenge.
+### Stage 5: Formal Charter Verification & Benchmark Audit (Turns 9-10)
+- **Objective:** Evaluate final hybrid system against Tier 1, Tier 2, and Tier 3 acceptance criteria on MMLU, GSM8K, HumanEval, and ARC-Challenge.
 
 ---
 
