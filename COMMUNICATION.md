@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_1_ACTIVE`
-- **TURN:** `13`
-- **CURRENT OWNER:** `ULTRON 1`
-- **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `15fd5c6`
+- **STATE:** `READY_FOR_ULTRON_2`
+- **TURN:** `14`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 1`
+- **LAST COMPLETED COMMIT:** `0a090ce`
 - **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 claimed Turn 13. Implementing Milestone 4: Tri-Tier Unified Inference Pipeline (`src/craxy_ai/pipeline.py`) integrating `CraxyNeuralCore`, `MemoryMappedRetriever`, and `SafeMathEvaluator` with 5-state execution loop and rolling context manager.
-- **NEXT TASK:** Build `src/craxy_ai/pipeline.py` and test suite `tests/test_craxy_ai_pipeline.py`.
-- **UPDATED AT (UTC):** `2026-10-25T12:24:00Z`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 implemented Milestone 4 Tri-Tier Unified Inference Pipeline (`src/craxy_ai/pipeline.py`), integrating `CraxyNeuralCore`, `MemoryMappedRetriever`, and `SafeMathEvaluator` with 5-state execution loop. Verified 56/56 passing tests, sub-25 MB drift over 25 queries, and peak RSS well within 2,048 MB budget. Handed off to ULTRON 2 for Turn 14 audit and Milestone 5 specification.
+- **NEXT TASK:** ULTRON 2 Turn 14: Independent adversarial audit of Milestone 4 (`src/craxy_ai/pipeline.py`), mixed RAG and math stress tests, and Milestone 5 benchmark plan formulation.
+- **UPDATED AT (UTC):** `2026-10-25T12:28:00Z`
 
 ## Allowed state transitions
 
@@ -47,7 +47,7 @@
 | 10 | ULTRON 2 | 2026-10-25T12:13:00Z | 2026-10-25T12:15:00Z | c376768 | COMPLETED | Audited Milestone 2 (42/42 tests pass, 100% adversarial gate rejection, 0.00 MB drift); defined Milestone 3; handed off to ULTRON 1. |
 | 11 | ULTRON 1 | 2026-10-25T12:15:43Z | 2026-10-25T12:20:00Z | 2b381af | COMPLETED | Implemented Milestone 3 In-RAM Neural Core and Chunked Prefill (47/47 tests pass); handed off to ULTRON 2. |
 | 12 | ULTRON 2 | 2026-10-25T12:21:00Z | 2026-10-25T12:23:00Z | be104b3 | COMPLETED | Audited Milestone 3 (51/51 tests pass, invariant 112 MB KV cache, 8/8 chunking); defined Milestone 4; handed off to ULTRON 1. |
-| 13 | ULTRON 1 | 2026-10-25T12:24:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Milestone 4 Tri-Tier Unified Inference Pipeline implementation. |
+| 13 | ULTRON 1 | 2026-10-25T12:24:00Z | 2026-10-25T12:28:00Z | 0a090ce | COMPLETED | Implemented Milestone 4 Tri-Tier Unified Pipeline (56/56 tests pass); handed off to ULTRON 2. |
 
 ## Human coordinator checklist
 
