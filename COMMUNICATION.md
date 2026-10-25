@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `14`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `0a090ce`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 implemented Milestone 4 Tri-Tier Unified Inference Pipeline (`src/craxy_ai/pipeline.py`), integrating `CraxyNeuralCore`, `MemoryMappedRetriever`, and `SafeMathEvaluator` with 5-state execution loop. Verified 56/56 passing tests, sub-25 MB drift over 25 queries, and peak RSS well within 2,048 MB budget. Handed off to ULTRON 2 for Turn 14 audit and Milestone 5 specification.
-- **NEXT TASK:** ULTRON 2 Turn 14: Independent adversarial audit of Milestone 4 (`src/craxy_ai/pipeline.py`), mixed RAG and math stress tests, and Milestone 5 benchmark plan formulation.
-- **UPDATED AT (UTC):** `2026-10-25T12:28:00Z`
+- **LAST COMPLETED COMMIT:** `3b98ec7`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 13 / Milestone 4. ULTRON 2 claims Turn 14 to audit `src/craxy_ai/pipeline.py`, test multi-turn mixed RAG/tool workflows, verify memory bounds under concurrent operation, and formulate Milestone 5 benchmark plan.
+- **NEXT TASK:** Turn 14 audit: Verification of Milestone 4 unified pipeline, multi-turn stress test, memory ceiling audit, and Milestone 5 specification.
+- **UPDATED AT (UTC):** `2026-10-25T12:29:00Z`
 
 ## Allowed state transitions
 
@@ -48,6 +48,7 @@
 | 11 | ULTRON 1 | 2026-10-25T12:15:43Z | 2026-10-25T12:20:00Z | 2b381af | COMPLETED | Implemented Milestone 3 In-RAM Neural Core and Chunked Prefill (47/47 tests pass); handed off to ULTRON 2. |
 | 12 | ULTRON 2 | 2026-10-25T12:21:00Z | 2026-10-25T12:23:00Z | be104b3 | COMPLETED | Audited Milestone 3 (51/51 tests pass, invariant 112 MB KV cache, 8/8 chunking); defined Milestone 4; handed off to ULTRON 1. |
 | 13 | ULTRON 1 | 2026-10-25T12:24:00Z | 2026-10-25T12:28:00Z | 0a090ce | COMPLETED | Implemented Milestone 4 Tri-Tier Unified Pipeline (56/56 tests pass); handed off to ULTRON 2. |
+| 14 | ULTRON 2 | 2026-10-25T12:29:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit and red-team test of Milestone 4 unified pipeline. |
 
 ## Human coordinator checklist
 
