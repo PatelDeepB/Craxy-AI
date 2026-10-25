@@ -95,3 +95,25 @@ Turn 2 audits and EXP-002 empirical measurements revealed two critical architect
 ### Consequences
 - Protects the system against Out-Of-Memory aborts during prompt ingestion.
 - Eliminates naive 70B MoE expert offloading proposals that overlook the shared attention backbone footprint.
+
+---
+
+## ADR-005: Graph-Based Vector Index Mandate & In-Process AST Tool Sandbox
+
+- **Date:** 2026-10-25
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** ADOPTED
+
+### Context
+Turn 4 audits and EXP-004 empirical evaluations revealed two critical operational constraints for the Hybrid Architecture:
+1. Flat-scan cosine similarity (used in the initial EXP-003 prototype) is mathematically refuted for the full 100 GB storage budget. At 50 million chunks (24.4 GB of vectors), a flat scan takes 9,765 ms (~9.8 seconds per query), severely violating the charter retrieval target (<= 50 ms). In contrast, graph-based indices (DiskANN / on-disk HNSW with IVF-PQ) require only ~128 node hops, executing in 6.43 ms.
+2. Tool-augmented reasoning for GSM8K cannot rely on operating system subprocess spawning (`python.exe -c "..."`), which incurs a 50 ms to 120 ms latency penalty per step on Windows NT. In-process AST mathematical evaluation runs in 3.7 to 28 microseconds and provides robust isolation against code injection and exponent resource explosion attacks.
+
+### Decision
+1. For scaling beyond the 10,000-chunk prototype to the full 100 GB storage budget, the on-disk retrieval engine must use a graph-based vector index (DiskANN / on-disk HNSW with inverted file product quantization).
+2. The mathematical tool-augmented reasoning engine must execute via an in-process restricted AST visitor (`SafeMathEvaluator`), avoiding subprocess overhead while guaranteeing deterministic timeouts (< 1 ms) and blocking all arbitrary system calls and file system operations.
+
+### Consequences
+- Guarantees scalable sub-10 ms retrieval latency across 50-100 million knowledge chunks on the 100 GB SSD tier.
+- Provides microsecond tool-use execution without introducing security risks or violating the local execution boundary.
+

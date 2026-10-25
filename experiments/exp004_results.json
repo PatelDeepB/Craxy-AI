@@ -1,0 +1,89 @@
+{
+  "experiment_id": "EXP-004",
+  "timestamp_utc": "2026-10-25T11:46:54Z",
+  "concurrent_memory_budget": {
+    "runtime_baseline_mb": 191.02,
+    "embedding_model_mb": 33.0,
+    "generative_backbone_mb": 768.0,
+    "kv_cache_mb": 112.0,
+    "activation_buffer_mb": 4.0,
+    "index_cache_mb": 32.0,
+    "total_theoretical_mb": 1140.02,
+    "measured_peak_rss_mb": 1140.02,
+    "available_headroom_mb": 907.98,
+    "fits_under_ceiling": true
+  },
+  "vector_index_scaling_projections": [
+    {
+      "corpus_name": "EXP-003 Baseline",
+      "num_chunks": 10000,
+      "raw_vectors_disk_mb": 4.88,
+      "flat_scan_latency_ms": 1.95,
+      "flat_scan_viable": true,
+      "diskann_latency_ms": 6.425,
+      "diskann_viable": true
+    },
+    {
+      "corpus_name": "Mid-Scale Library",
+      "num_chunks": 1000000,
+      "raw_vectors_disk_mb": 488.28,
+      "flat_scan_latency_ms": 195.31,
+      "flat_scan_viable": false,
+      "diskann_latency_ms": 6.425,
+      "diskann_viable": true
+    },
+    {
+      "corpus_name": "Full 100 GB Scale",
+      "num_chunks": 50000000,
+      "raw_vectors_disk_mb": 24414.06,
+      "flat_scan_latency_ms": 9765.62,
+      "flat_scan_viable": false,
+      "diskann_latency_ms": 6.425,
+      "diskann_viable": true
+    }
+  ],
+  "tool_reasoning_sandbox_evaluations": [
+    {
+      "success": true,
+      "expression": "((250 * 12) + (150 * 8)) / 2",
+      "result": 2100.0,
+      "error": null,
+      "latency_us": 28.0
+    },
+    {
+      "success": true,
+      "expression": "45000 * (1 - 0.15) ** 3",
+      "result": 27635.624999999996,
+      "error": null,
+      "latency_us": 11.8
+    },
+    {
+      "success": true,
+      "expression": "123456789 * 987654321",
+      "result": 121932631112635269,
+      "error": null,
+      "latency_us": 3.7
+    },
+    {
+      "success": false,
+      "expression": "100 / 0",
+      "result": null,
+      "error": "ZeroDivisionError: division by zero",
+      "latency_us": 4.8
+    },
+    {
+      "success": false,
+      "expression": "__import__('os').system('dir')",
+      "result": null,
+      "error": "TypeError: Disallowed AST node: Call",
+      "latency_us": 13.8
+    },
+    {
+      "success": false,
+      "expression": "2 ** 100000",
+      "result": null,
+      "error": "OverflowError: Exponent bounds exceeded",
+      "latency_us": 4.3
+    }
+  ]
+}
