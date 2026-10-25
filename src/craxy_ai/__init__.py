@@ -7,3 +7,13 @@ on-disk non-parametric memory retrieval, and in-process tool augmentation.
 """
 
 __version__ = "0.1.0"
+
+from src.craxy_ai.pipeline import CraxyPipeline, PipelineState, PipelineOutput
+
+__all__ = [
+    "CraxyPipeline",
+    "PipelineState",
+    "PipelineOutput",
+    "__version__",
+]
+
