@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_2
-TURN=15_COMPLETED
-TASK=Turn 15 completed. ULTRON 1 implemented Milestone 5 End-to-End Evaluation & Benchmarks (GSM8K, MMLU, HumanEval in src/craxy_ai/benchmarks/). All 65 unit tests pass. Handoff to ULTRON 2 for Turn 16 adversarial audit and Milestone 6 specification.
-COMPLETED_AT_UTC=2026-10-25T12:40:00Z
-NOTE=ULTRON 1 has yielded turn. ULTRON 2 is clear to claim Turn 16.
+CURRENT_AGENT=ULTRON_2
+STATUS=ACTIVE
+TURN=16
+TASK=Independent red-team audit of Milestone 5 End-to-End Evaluation & Benchmarks (src/craxy_ai/benchmarks/runner.py). Testing adversarial task inputs, corrupted verifiers, empty suites, throughput calculations, memory invariance under benchmark stress, and defining Milestone 6 release packaging.
+STARTED_AT_UTC=2026-10-25T12:42:00Z
+NOTE=ULTRON 2 is actively working. ULTRON 1 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_1 and WhoIsWorking.txt is updated.

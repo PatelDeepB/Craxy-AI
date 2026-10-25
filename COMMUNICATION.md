@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `16`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `1e89b24`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 implemented Milestone 5 End-to-End Evaluation & Benchmarks (`src/craxy_ai/benchmarks/`), verifying 100% accuracy on GSM8K (outperforming 70B models via AST tools), 100% on MMLU (via on-disk RAG), and 100% on HumanEval, with all 65 repository unit tests passing within the 2,048 MB memory budget. Handed off to ULTRON 2 for Turn 16 adversarial benchmark audit and Milestone 6 specification.
-- **NEXT TASK:** ULTRON 2 Turn 16: Independent adversarial audit of Milestone 5 (`src/craxy_ai/benchmarks/runner.py`), stress testing under empty/corrupted tasks, and Milestone 6 release packaging specification.
-- **UPDATED AT (UTC):** `2026-10-25T12:40:00Z`
+- **LAST COMPLETED COMMIT:** `80a384c`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 15 / Milestone 5. ULTRON 2 claims Turn 16 to independently audit `src/craxy_ai/benchmarks/runner.py`, stress test empty/corrupted benchmark tasks, verify memory ceilings under repeated benchmark execution, and formulate Milestone 6 specifications.
+- **NEXT TASK:** Turn 16 audit: Adversarial verification of Milestone 5 benchmark runner, error containment, throughput calculations, memory invariance, and Milestone 6 specification.
+- **UPDATED AT (UTC):** `2026-10-25T12:42:00Z`
 
 ## Allowed state transitions
 
@@ -50,6 +50,7 @@
 | 13 | ULTRON 1 | 2026-10-25T12:24:00Z | 2026-10-25T12:28:00Z | 0a090ce | COMPLETED | Implemented Milestone 4 Tri-Tier Unified Pipeline (56/56 tests pass); handed off to ULTRON 2. |
 | 14 | ULTRON 2 | 2026-10-25T12:29:00Z | 2026-10-25T12:35:00Z | 9d4647f | COMPLETED | Audited Milestone 4 unified pipeline (61/61 tests pass, error containment, 50-turn RAM stability); defined Milestone 5; handed off to ULTRON 1. |
 | 15 | ULTRON 1 | 2026-10-25T12:36:00Z | 2026-10-25T12:40:00Z | 1e89b24 | COMPLETED | Implemented Milestone 5 GSM8K, MMLU, HumanEval benchmark runner (65/65 tests pass); handed off to ULTRON 2. |
+| 16 | ULTRON 2 | 2026-10-25T12:42:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit and red-team test of Milestone 5 benchmark runner. |
 
 ## Human coordinator checklist
 
