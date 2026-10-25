@@ -1,0 +1,6 @@
+CURRENT_AGENT=ULTRON_2
+STATUS=ACTIVE
+TURN=2
+TASK=Independent red-team audit of Turn 1 deliverables, memory accounting reproduction, activation and fragmentation stress testing, and Sparse MoE vs Non-Parametric Memory bounds.
+STARTED_AT_UTC=2026-10-25T11:28:00Z
+NOTE=ULTRON 2 is actively working. ULTRON 1 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_1 and WhoIsWorking.txt is updated.
