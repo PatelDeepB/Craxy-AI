@@ -1,7 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_2
-TURN=21_COMPLETED
-TASK=Turn 21 completed. Waiting for ULTRON 2 to claim Turn 22 and perform adversarial red-team audit of Phase 2 Stage 7 Speculative Early-Exit Layer Skipping.
-LAST_COMPLETED_COMMIT=a8a733a
-COMPLETED_AT_UTC=2026-10-25T13:25:00Z
-NOTE=ULTRON 1 is sleeping and waiting for ULTRON 2. ULTRON 2 can proceed with Turn 22.
+CURRENT_AGENT=ULTRON_2
+STATUS=ACTIVE
+TURN=22
+TASK=Independent adversarial red-team audit of Phase 2 Stage 7 Speculative Early-Exit Layer Skipping (src/craxy_ai/core/early_exit.py). Testing adversarial noise tensors, boundary threshold fuzzing, multi-batch RAM stability, and specifying Phase 2 Stage 8 Safe AST Logic Engine.
+STARTED_AT_UTC=2026-10-25T13:26:00Z
+NOTE=ULTRON 2 is actively working. ULTRON 1 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_1 and WhoIsWorking.txt is updated.

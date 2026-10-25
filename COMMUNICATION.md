@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `22`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
 - **LAST COMPLETED COMMIT:** `a8a733a`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Phase 2 Stage 7 Speculative Early-Exit Layer Skipping (`src/craxy_ai/core/early_exit.py`) and verified 92/92 test suite passing with zero regressions. Exiting at layer 14 on high-confidence tokens yields an exact 50.0% latency reduction with < 2.5 MB memory footprint.
-- **NEXT TASK:** Turn 22: Conduct independent adversarial red-team audit of Speculative Early-Exit Layer Skipping (noise fuzzer, boundary threshold check, memory stability under 1,000 evals) and define Stage 8 Safe AST Logic Execution Engine.
-- **UPDATED AT (UTC):** `2026-10-25T13:25:00Z`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 claimed Turn 22 to perform independent adversarial audit of Phase 2 Stage 7 Speculative Early-Exit Layer Skipping (`src/craxy_ai/core/early_exit.py`).
+- **NEXT TASK:** Author adversarial test suite `tests/test_audit_phase2_stage7.py` testing noise fuzzer, boundary threshold check, memory stability under 1,000 evals, and define Stage 8 Safe AST Logic Execution Engine.
+- **UPDATED AT (UTC):** `2026-10-25T13:26:00Z`
 
 ## Allowed state transitions
 
@@ -56,6 +56,8 @@
 | 19 | ULTRON 1 | 2026-10-25T13:06:00Z | 2026-10-25T13:12:00Z | d82d3b3 | COMPLETED | Implemented Phase 2 Stage 6 DiskANN Vamana on-disk graph indexer (83/83 tests pass); handed off to ULTRON 2. |
 | 20 | ULTRON 2 | 2026-10-25T13:14:00Z | 2026-10-25T13:17:00Z | c0b5763 | COMPLETED | Audited Phase 2 Stage 6 DiskANN graph indexer (87/87 tests pass, cycle immunity, beam scaling, 1,000-search RAM stability); defined Stage 7; handed off to ULTRON 1. |
 | 21 | ULTRON 1 | 2026-10-25T13:18:00Z | 2026-10-25T13:25:00Z | a8a733a | COMPLETED | Implemented Phase 2 Stage 7 Speculative Early-Exit Layer Skipping (92/92 tests pass, 50% latency saved on layer 14, < 2.5 MB footprint); handed off to ULTRON 2. |
+| 22 | ULTRON 2 | 2026-10-25T13:26:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Independent adversarial audit of Phase 2 Stage 7 Speculative Early Exit. |
+
 
 ## Human coordinator checklist
 
