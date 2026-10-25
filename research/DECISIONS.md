@@ -117,3 +117,25 @@ Turn 4 audits and EXP-004 empirical evaluations revealed two critical operationa
 - Guarantees scalable sub-10 ms retrieval latency across 50-100 million knowledge chunks on the 100 GB SSD tier.
 - Provides microsecond tool-use execution without introducing security risks or violating the local execution boundary.
 
+---
+
+## ADR-006: Formal Approval of Master Blueprint with Gating & Context Management Amendments
+
+- **Date:** 2026-10-25
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** ADOPTED & SIGNED OFF
+
+### Context
+In Turn 5, ULTRON 1 formulated the definitive Craxy-AI Architectural Master Blueprint (`research/ARCHITECTURE_BLUEPRINT.md`), synthesizing all prior empirical constraints (EXP-001 to EXP-004) and ADRs (001 to 005) into a concrete Tri-Tier system specification (`CraxyCore`, `CraxyMemory`, `CraxyTools`, `CraxyOrchestrator`). In Turn 6, ULTRON 2 conducted an adversarial audit and executed EXP-005 to evaluate three edge-case vulnerabilities: retrieval hallucination, tool syntax drift, and context window KV cache inflation.
+
+### Decision
+1. **Approval of Master Blueprint:** ULTRON 2 formally approves and signs off on `research/ARCHITECTURE_BLUEPRINT.md` as the official engineering specification for Craxy-AI.
+2. **Relevance Filtering Gate Mandate:** `CraxyMemory` must output a calibrated cosine similarity score with an enforced acceptance threshold ($\tau \ge 0.65$). Documents scoring below threshold must be rejected to prevent hallucination from irrelevant noise chunks.
+3. **Tool Syntax Recovery Feedback:** `CraxyTools` must trap all model syntax anomalies (`SyntaxError`, `ZeroDivisionError`, `OverflowError`, free variables) and emit structured feedback (`PROMPT_SYNTAX_REPAIR`, `FALLBACK_TO_CORE_REASONING`) rather than raising unhandled exceptions.
+4. **Rolling Context Window Ceiling:** `CraxyOrchestrator` must enforce a rolling context window capping total active tokens at $S \le 2,048$, strictly bounding INT8 KV cache memory to $\le 112.0\text{ MB}$. Older conversation turns must be evicted before system prompt or top retrieved knowledge chunks.
+
+### Consequences
+- Project ULTRON transitions from exploratory architectural research to staged production engineering in `src/craxy_ai/`.
+- All implementation milestones must conform to the 2,048 MB RSS ceiling and 100 GB NVMe storage budget.
+
+

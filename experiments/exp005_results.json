@@ -1,0 +1,76 @@
+{
+  "experiment_id": "EXP-005",
+  "timestamp_utc": "2026-10-25T11:54:50Z",
+  "relevance_filtering_gate": [
+    {
+      "chunk_id": 101,
+      "text": "Exact target fact about Llama-3 architecture.",
+      "similarity_score": 0.88,
+      "accepted_by_gate": true
+    },
+    {
+      "chunk_id": 102,
+      "text": "Marginally related paper discussion on MoE.",
+      "similarity_score": 0.68,
+      "accepted_by_gate": true
+    },
+    {
+      "chunk_id": 103,
+      "text": "Unrelated sports news article.",
+      "similarity_score": 0.42,
+      "accepted_by_gate": false
+    },
+    {
+      "chunk_id": 104,
+      "text": "Misleading distractor text with random keywords.",
+      "similarity_score": 0.31,
+      "accepted_by_gate": false
+    }
+  ],
+  "tool_syntax_resilience": [
+    {
+      "status": "SUCCESS",
+      "computed_value": 6300,
+      "recovery_action": "INJECT_RESULT",
+      "message": "Successfully evaluated: 6300"
+    },
+    {
+      "status": "ERROR_RECOVERED",
+      "computed_value": null,
+      "recovery_action": "PROMPT_SYNTAX_REPAIR",
+      "message": "Syntax error in expression. Please check parentheses and operators."
+    },
+    {
+      "status": "ERROR_RECOVERED",
+      "computed_value": null,
+      "recovery_action": "FLAG_UNDEFINED_OPERATION",
+      "message": "Division by zero encountered. Expression mathematically undefined."
+    },
+    {
+      "status": "ERROR_RECOVERED",
+      "computed_value": null,
+      "recovery_action": "FLAG_BOUNDS_OVERFLOW",
+      "message": "Numerical overflow. Exponent exceeds safety bound."
+    },
+    {
+      "status": "ERROR_RECOVERED",
+      "computed_value": null,
+      "recovery_action": "FALLBACK_TO_CORE_REASONING",
+      "message": "Calculation rejected: TypeError: Disallowed AST node: Name"
+    },
+    {
+      "status": "ERROR_RECOVERED",
+      "computed_value": null,
+      "recovery_action": "FALLBACK_TO_CORE_REASONING",
+      "message": "Calculation rejected: TypeError: Disallowed AST node: Call"
+    }
+  ],
+  "rolling_context_window_audit": {
+    "system_prompt_tokens": 150,
+    "retrieved_context_tokens": 512,
+    "conversation_tokens": 1200,
+    "total_tokens": 1862,
+    "kv_cache_int8_mb": 101.83,
+    "was_truncated": true
+  }
+}

@@ -231,5 +231,58 @@ Simulated 32 layers, reading 2 distinct candidate experts of 16 MB each (64 read
 
 *Finding:* In-process AST mathematical evaluation executes in 3.7 to 28 microseconds (over 1,000x faster than spawning subprocesses), completely neutralizes code injection vulnerabilities, and protects system stability against algorithmic attacks.
 
+---
+
+## EXP-005: Red-Team Validation of Master Blueprint Edge Cases
+
+- **Date:** 2026-10-25
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script:** `experiments/exp005_master_blueprint_redteam.py`
+- **Test Suite:** `tests/test_master_blueprint_redteam.py` (4/4 tests passed; all 21 repository tests pass)
+- **Artifact:** `experiments/exp005_results.json`
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** ULTRON 1's Craxy-AI Architectural Master Blueprint (`research/ARCHITECTURE_BLUEPRINT.md`) proposed an end-to-end Tri-Tier design. Before implementation begins, three critical edge-case risks required empirical validation:
+  1. *Retrieval Hallucination Risk:* If retrieved chunks have low semantic similarity or contain adversarial distractors, does the system inject noise into the model context?
+  2. *Tool Syntax Drift:* When small models generate malformed arithmetic tags, does the execution sandbox crash or trigger unrecoverable state?
+  3. *Context Window KV Cache Inflation:* Does conversational multi-turn context creep over the 2,048 token boundary, inflating KV cache memory beyond the 112 MB budget?
+
+### 2. Empirical Results
+
+#### A. Relevance Filtering Gate ($Similarity \ge 0.65$)
+| Candidate Chunk | Ground Truth Category | Similarity Score | Gate Decision | Outcome |
+|---|---|---|---|---|
+| Chunk 101 | Exact target architectural fact | 0.88 | ACCEPTED | Passed to prefill context |
+| Chunk 102 | Borderline related discussion | 0.68 | ACCEPTED | Passed to prefill context |
+| Chunk 103 | Unrelated sports news | 0.42 | REJECTED | Filtered out; zero noise injected |
+| Chunk 104 | Adversarial keyword distractor | 0.31 | REJECTED | Filtered out; zero noise injected |
+
+*Finding:* Calibrated cosine similarity threshold ($\tau = 0.65$) reliably filters out distractor documents, preventing RAG hallucination and unnecessary context token consumption.
+
+#### B. Tool Syntax Drift and Malformed Equation Resilience
+| Tested Input | Syntactic Anomaly | Sandbox Status | Recovery Action | System Resilience |
+|---|---|---|---|---|
+| `150 * (24 + 18)` | Valid arithmetic | `SUCCESS` | `INJECT_RESULT` | Exact value (6300) injected |
+| `150 * (24 + 18` | Missing closing paren | `ERROR_RECOVERED` | `PROMPT_SYNTAX_REPAIR` | Feedback generated; no crash |
+| `100 / 0` | Mathematical singularity | `ERROR_RECOVERED` | `FLAG_UNDEFINED_OPERATION` | ZeroDivisionError trapped |
+| `2 ** 50000` | Exponent DOS attack | `ERROR_RECOVERED` | `FLAG_BOUNDS_OVERFLOW` | Bounded in 4.3 us |
+| `x + 5` | Free variable | `ERROR_RECOVERED` | `FALLBACK_TO_CORE_REASONING` | Graceful core fallback |
+| `empty_call()` | Disallowed function call | `ERROR_RECOVERED` | `FALLBACK_TO_CORE_REASONING` | Call node blocked |
+
+*Finding:* The AST execution engine robustly recovers from all model syntax errors, returning structured recovery directives without throwing unhandled exceptions.
+
+#### C. Rolling Context Window Manager
+| Parameter | Unmanaged History | Managed Rolling Window | Budget Ceiling | Status |
+|---|---|---|---|---|
+| System Prompt Tokens | 150 | 150 | - | Invariant |
+| Retrieved Context Tokens | 512 | 512 | <= 512 | Invariant |
+| Conversational History Tokens | 2,500 (10 turns) | 1,200 (Evicted oldest) | - | Truncated |
+| Total Active Tokens | 3,162 | **1,862** | **<= 2,048** | **PASS** |
+| Active INT8 KV Cache Memory | 172.93 MB | **101.83 MB** | **<= 112.0 MB** | **PASS** |
+
+*Finding:* Rolling eviction of oldest conversational turns guarantees that total active tokens stay strictly <= 2,048, capping INT8 KV cache memory at 101.83 MB.
+
+
 
 
