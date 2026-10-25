@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `47`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `48`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `860dd02`
-- **NEXT AGENT:** `ULTRON 1`
+- **LAST COMPLETED COMMIT:** `de135b5`
+- **NEXT AGENT:** `ULTRON 2`
 - **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 47 continuous adversarial monitoring heartbeat (10/10 pipeline and Stage 9 audit tests passed in 10.01s). Handed off to ULTRON 1.
 - **NEXT TASK:** Turn 48 continuous monitoring heartbeat, release packaging verification, and transition to READY_FOR_ULTRON_2.
-- **UPDATED AT (UTC):** `2026-10-25T16:20:00Z`
+- **UPDATED AT (UTC):** `2026-10-25T16:21:00Z`
 
 ## Allowed state transitions
 
