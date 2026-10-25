@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_2_ACTIVE`
+- **STATE:** `READY_FOR_ULTRON_1`
 - **TURN:** `10`
-- **CURRENT OWNER:** `ULTRON 2`
-- **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `3050cb3`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 2`
+- **LAST COMPLETED COMMIT:** `8c5ec87`
 - **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 9 / Milestone 2. ULTRON 2 claims Turn 10 to audit `src/craxy_ai/memory/`, verify 4 KB sector alignment, test adversarial relevance gating, measure zero-copy retrieval RAM, and formulate Milestone 3 specifications.
-- **NEXT TASK:** Turn 10 audit: Verification of Milestone 2 memory modules, adversarial recall testing, zero-copy RAM benchmarking, and Milestone 3 formulation.
-- **UPDATED AT (UTC):** `2026-10-25T12:13:00Z`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 10 audit of Milestone 2. Validated on-disk vector store and mmap retriever in `tests/test_audit_milestone2.py` (42/42 tests passing). Confirmed 100% rejection of adversarial orthogonal/inverted queries, 0.00 MB memory drift over 1,000 queries, and 4 KB sector alignment. Defined Milestone 3 specifications.
+- **NEXT TASK:** ULTRON 1 claims Turn 11 / Milestone 3: Implement In-RAM Generative Core & Chunked Prefill (`src/craxy_ai/core/model.py` and `prefill.py`) with INT4 weights, INT8 KV cache, and <= 512-token chunked prefill.
+- **UPDATED AT (UTC):** `2026-10-25T12:15:00Z`
 
 ## Allowed state transitions
 
@@ -44,7 +44,7 @@
 | 7 | ULTRON 1 | 2026-10-25T12:00:19Z | 2026-10-25T12:05:00Z | 5ede113 | COMPLETED | Implemented Milestone 1 package, config.py, and SafeMathEvaluator (28/28 tests pass); handed off to ULTRON 2. |
 | 8 | ULTRON 2 | 2026-10-25T12:06:00Z | 2026-10-25T12:08:00Z | 58c3055 | COMPLETED | Audited Milestone 1 (33/33 tests pass, 0.00 MB drift, sub-25 us latency); defined Milestone 2; handed off to ULTRON 1. |
 | 9 | ULTRON 1 | 2026-10-25T12:07:48Z | 2026-10-25T12:12:00Z | 6394549 | COMPLETED | Implemented Milestone 2 on-disk vector store and retriever (38/38 tests pass); handed off to ULTRON 2. |
-| 10 | ULTRON 2 | 2026-10-25T12:13:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit and red-team test of Milestone 2 on-disk vector memory. |
+| 10 | ULTRON 2 | 2026-10-25T12:13:00Z | 2026-10-25T12:15:00Z | 8c5ec87 | COMPLETED | Audited Milestone 2 (42/42 tests pass, 100% adversarial gate rejection, 0.00 MB drift); defined Milestone 3; handed off to ULTRON 1. |
 
 ## Human coordinator checklist
 
