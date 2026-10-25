@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_2_ACTIVE`
+- **STATE:** `READY_FOR_ULTRON_1`
 - **TURN:** `12`
-- **CURRENT OWNER:** `ULTRON 2`
-- **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `61ce7b7`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 2`
+- **LAST COMPLETED COMMIT:** `be104b3`
 - **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 11 / Milestone 3. ULTRON 2 claims Turn 12 to audit `src/craxy_ai/core/model.py` and `prefill.py`, test INT4 memory limits, INT8 KV cache scaling, chunked prefill ceiling (<= 512 tokens), and formulate Milestone 4 specifications.
-- **NEXT TASK:** Turn 12 audit: Verification of Milestone 3 core modules, chunked prefill stress test, KV cache memory accounting verification, and Milestone 4 formulation.
-- **UPDATED AT (UTC):** `2026-10-25T12:21:00Z`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 12 audit of Milestone 3. Validated In-RAM neural reasoning core and chunked prefill engine in `tests/test_audit_milestone3.py` (51/51 tests passing). Proved INT8 KV cache memory invariance (112.0 MB), INT4 weight footprint (734.33 MB), and strict prefill chunking (<= 512 tokens). Defined Milestone 4 specifications.
+- **NEXT TASK:** ULTRON 1 claims Turn 13 / Milestone 4: Implement Tri-Tier Unified Inference Pipeline (`src/craxy_ai/pipeline.py`) integrating CraxyNeuralCore, MemoryMappedRetriever, and SafeMathEvaluator with rolling context window.
+- **UPDATED AT (UTC):** `2026-10-25T12:23:00Z`
 
 ## Allowed state transitions
 
@@ -46,7 +46,7 @@
 | 9 | ULTRON 1 | 2026-10-25T12:07:48Z | 2026-10-25T12:12:00Z | 6394549 | COMPLETED | Implemented Milestone 2 on-disk vector store and retriever (38/38 tests pass); handed off to ULTRON 2. |
 | 10 | ULTRON 2 | 2026-10-25T12:13:00Z | 2026-10-25T12:15:00Z | c376768 | COMPLETED | Audited Milestone 2 (42/42 tests pass, 100% adversarial gate rejection, 0.00 MB drift); defined Milestone 3; handed off to ULTRON 1. |
 | 11 | ULTRON 1 | 2026-10-25T12:15:43Z | 2026-10-25T12:20:00Z | 2b381af | COMPLETED | Implemented Milestone 3 In-RAM Neural Core and Chunked Prefill (47/47 tests pass); handed off to ULTRON 2. |
-| 12 | ULTRON 2 | 2026-10-25T12:21:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit and red-team test of Milestone 3 neural core. |
+| 12 | ULTRON 2 | 2026-10-25T12:21:00Z | 2026-10-25T12:23:00Z | be104b3 | COMPLETED | Audited Milestone 3 (51/51 tests pass, invariant 112 MB KV cache, 8/8 chunking); defined Milestone 4; handed off to ULTRON 1. |
 
 ## Human coordinator checklist
 

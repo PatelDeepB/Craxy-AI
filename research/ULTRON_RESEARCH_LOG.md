@@ -822,6 +822,92 @@ ULTRON 1 successfully implemented Milestone 3 of the Craxy-AI Master Blueprint, 
   - Red-team audit of chunking boundary conditions and KV cache eviction.
   - Concrete specifications defined for Milestone 4 unified pipeline.
 
+---
+
+## Turn 12: Independent Adversarial Audit of Milestone 3 Generative Core & Milestone 4 Specification
+
+- **Agent:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Turn Number:** 12
+- **Date/Time (UTC):** 2026-10-25T12:23:00Z
+- **Task:** Independently audit the Milestone 3 production codebase (`src/craxy_ai/core/model.py`, `src/craxy_ai/core/prefill.py`), execute adversarial chunking stress tests (`tests/test_audit_milestone3.py`), verify INT4 weight ceilings, prove INT8 KV cache memory invariance, and formulate specifications for Milestone 4 (Tri-Tier Unified Pipeline).
+- **Commit Hash:** `be104b3` (and final handoff commit)
+
+---
+
+### 1. Executive Result
+ULTRON 2 conducted an adversarial red-team audit of the Milestone 3 In-RAM Neural Reasoning Core and Chunked Prefill Engine in `src/craxy_ai/core/`. Through our independent test suite (`tests/test_audit_milestone3.py`), we verified that `KVCacheBuffer` strictly bounds INT8 KV cache footprint to exactly 112.0 MB across extreme token accumulations (accumulating up to 10,000 tokens while maintaining sequence length $\le 2,048$). Furthermore, `ChunkedPrefillEngine` was confirmed to partition long sequences (4,096 tokens) into exactly 8 chunks where every single chunk is strictly $\le 512$ tokens, bounding activation memory surges to $< 30.0\text{ MB}$. All 51 unit tests pass repository-wide in 2.92 seconds with zero regressions. Milestone 3 is formally audited and approved, and Milestone 4 requirements for the unified `CraxyPipeline` are established.
+
+---
+
+### 2. Files Changed and Purpose
+- `tests/test_audit_milestone3.py`: Independent adversarial test suite testing extreme token accumulation in KV cache, 4,096-token chunked prefill partitioning, INT4 parameter budget adherence, and syntax tag parser boundary resilience.
+- `COMMUNICATION.md`: Claimed Turn 12 (`ULTRON_2_ACTIVE`), logged timestamps, and transitioned to `READY_FOR_ULTRON_1` for Turn 13 / Milestone 4.
+- `WhoIsWorking.txt`: Maintained real-time worker synchronization and sleep/wait cycle.
+- `research/ULTRON_RESEARCH_LOG.md`: Recorded complete Turn 12 audit findings and handoff criteria.
+
+---
+
+### 3. Research Sources and Claims Supported
+1. **Frantar et al. (IST Austria, 2023)** - "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers".
+   - *Audit finding:* 4-bit weight quantization allows a 1.54B parameter transformer to occupy ~734 MB of RAM (0.5 bytes/param), fitting comfortably within the 768 MB budget allocation.
+2. **Dao et al. (Stanford University, 2022, 2023)** - "FlashAttention / FlashAttention-2".
+   - *Audit finding:* Slicing the prefill sequence into chunks of $S_{\text{chunk}} \le 512$ eliminates quadratic attention activation memory overhead, transforming a 276 MB spike into a bounded ~27 MB delta.
+
+---
+
+### 4. Hypotheses, Predictions, and Empirical Evidence
+- **Hypothesis 1 (KV Cache Memory Invariance):** Repeated token accumulation beyond 2,048 tokens will never cause `KVCacheBuffer` to allocate additional memory or drift above 112.0 MB.
+  - *Status:* **MEASURED & CONFIRMED**.
+  - *Outcome:* Across 20 consecutive 500-token appends (10,000 total tokens), memory footprint stayed invariant at exactly 112.0 MB, and active sequence length stayed $\le 2,048$.
+- **Hypothesis 2 (Strict Chunk Partitioning):** A 4,096-token context sequence will be partitioned into exactly 8 chunks of 512 tokens each with zero chunks exceeding 512 tokens.
+  - *Status:* **MEASURED & CONFIRMED**.
+  - *Outcome:* Engine executed 8 chunks of 512 tokens; activation delta was measured at 27.71 MB; `fits_under_ceiling == True`.
+- **Hypothesis 3 (Tool Tag Parsing Resilience):** Truncated, unclosed, or empty tags will be parsed gracefully without throwing unhandled exceptions.
+  - *Status:* **MEASURED & CONFIRMED**.
+  - *Outcome:* Empty tag `<<retrieve: >>` yielded empty payload, unclosed tag was ignored, and multiple tags returned first valid tag cleanly.
+
+---
+
+### 5. Quantitative Metrics Summary
+- **INT4 Quantized Backbone Footprint:** 734.33 MB (budget: <= 768.0 MB).
+- **INT8 KV Cache Footprint (2,048 tokens):** 112.00 MB (invariant).
+- **Chunked Prefill Peak Surge:** 27.71 MB (budget: <= 30.0 MB).
+- **Unit Test Suite Pass Rate:** 51/51 tests passed across 8 test suites in 2.92 seconds.
+- **Total Concurrent In-RAM Footprint:** 1,141.27 MB (leaving 906.73 MB safety headroom under 2,048 MB ceiling).
+
+---
+
+### 6. Flaws Found, Unresolved Risks, and Mitigations
+1. **Pipeline State Synchronization for Milestone 4:** When `CraxyPipeline` invokes `SafeMathEvaluator` or `MemoryMappedRetriever`, intermediate strings must not accumulate indefinitely in process history. *Mitigation:* ULTRON 1 must implement a rolling conversation manager in `CraxyPipeline` that bounds dialogue history to 1,200 tokens (ADR-006).
+2. **Context Assembly Order:** The prefill prompt must strictly place the system prompt first, retrieved knowledge chunks second ($\le 512$ tokens), and dialogue history third to ensure attention mask coherence.
+
+---
+
+### 7. Claim Categorization
+- **Measured:** 51/51 test pass rate in 2.92s, 112.0 MB invariant KV cache size, 734.33 MB INT4 footprint, 27.71 MB activation surge, 8/8 chunk partitions.
+- **Derived / Analytical:** GQA KV cache tensor dimension calculations ($28 \times 1 \times 2048 \times 8 \times 128 \times 1\text{ byte} = 117,440,512\text{ bytes}$).
+- **Reported by Sources:** GPTQ 4-bit memory scaling; FlashAttention prefill chunking.
+- **Hypothesis for Milestone 4:** The unified `CraxyPipeline` will execute complete Tri-Tier question answering (model reasoning + on-disk retrieval + AST tool calculation) with $< 1,200\text{ MB}$ peak RSS and $> 20.0\text{ tok/s}$ throughput.
+
+---
+
+### 8. Handoff to ULTRON 1
+
+- **Next Agent:** ULTRON 1 (Architect & Experimental Builder)
+- **Concrete Task for ULTRON 1:**
+  1. Implement Milestone 4: Tri-Tier Unified Inference Pipeline in `src/craxy_ai/pipeline.py`:
+     - Unify `CraxyNeuralCore`, `MemoryMappedRetriever`, and `SafeMathEvaluator` into a single high-level inference class `CraxyPipeline`.
+     - Implement the 5-state execution loop (`IDLE` -> `PREFILL` -> `GENERATE` -> `TOOL_DISPATCH` -> `FINALIZE`).
+     - Enforce rolling context window manager capping total active tokens to $\le 2,048$.
+  2. Write comprehensive unit tests in `tests/test_craxy_ai_pipeline.py` verifying end-to-end question answering, RAG augmentation, tool invocation, and memory ceiling compliance.
+  3. Ensure all 51+ unit tests continue to pass with zero regressions.
+- **Acceptance Criteria for ULTRON 1:**
+  - `src/craxy_ai/pipeline.py` fully implemented with docstrings and type annotations.
+  - End-to-end execution of mathematical and factual reasoning workflows.
+  - Total process RSS strictly $\le 2,048\text{ MB}$ under full pipeline operation.
+  - All unit tests passing with clean commit prefixed `ultron-1:`.
+
+
 
 
 
