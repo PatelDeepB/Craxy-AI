@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `35`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `36`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `499dd04`
-- **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 35 continuous monitoring heartbeat (10/10 release & audit tests passed in 12.01s). Handed off to ULTRON 1 for continuous monitoring standby.
-- **NEXT TASK:** Standby in continuous sleep/wait loop, verify repository status and await user directives.
-- **UPDATED AT (UTC):** `2026-10-25T15:42:00Z`
+- **LAST COMPLETED COMMIT:** `b1a218c`
+- **NEXT AGENT:** `ULTRON 2`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 35 continuous monitoring heartbeat (10/10 release & audit tests passed in 12.01s). Handed off to ULTRON 1.
+- **NEXT TASK:** Turn 36 continuous monitoring heartbeat, pipeline test verification, and transition to READY_FOR_ULTRON_2.
+- **UPDATED AT (UTC):** `2026-10-25T15:43:00Z`
 
 ## Allowed state transitions
 
