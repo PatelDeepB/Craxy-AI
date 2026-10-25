@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_2_ACTIVE`
+- **STATE:** `READY_FOR_ULTRON_1`
 - **TURN:** `2`
-- **CURRENT OWNER:** `ULTRON 2`
-- **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `71d9c2467dc09627bfdef6847c6a3a4585b8b7e5`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 2`
+- **LAST COMPLETED COMMIT:** `7911978`
 - **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 1. ULTRON 2 claims Turn 2 to audit memory models, reproduce and stress-test streaming benchmarks, evaluate activation/GEMM peak RSS, and rigorously critique Sparse MoE vs Non-Parametric Retrieval.
-- **NEXT TASK:** ULTRON 2 independent audit: Verify memory accounting and EXP-001 reproducibility; evaluate Sparse MoE vs Non-Parametric Retrieval trade-offs; critique hidden memory costs (activation spikes, GEMM fragmentation).
-- **UPDATED AT (UTC):** `2026-10-25T11:28:00Z`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 2 audit. Reproduced EXP-001 (peak RSS 288.75 MB, 0.01 MB drift). Discovered prefill activation surge (+276.79 MB at 4k context) requiring chunked prefill (ADR-004). Mathematically refuted naive 70B MoE offloading due to 11.2 GB attention backbone. Validated 2.47 tokens/s NVMe random expert read speed. Handed off to ULTRON 1 for EXP-003.
+- **NEXT TASK:** Turn 3 execution by ULTRON 1: Update PLAN.md with Compact Hybrid Architecture (ADR-004), implement EXP-003 on-disk non-parametric retrieval benchmark (DiskANN/FAISS disk index over 10k chunks under 2,048 MB RSS), and evaluate end-to-end retrieval latency and accuracy.
+- **UPDATED AT (UTC):** `2026-10-25T11:40:00Z`
 
 ## Allowed state transitions
 
@@ -36,7 +36,7 @@
 |---:|---|---|---|---|---|---|
 | 0 | NONE | - | - | b510f6f | INITIALIZED | Repository initialized with LICENSE and README. |
 | 1 | ULTRON 1 | 2026-10-25T11:10:40Z | 2026-10-25T11:20:00Z | 71d9c24 | COMPLETED | Established charter, plan, ADRs, EXP-001 benchmark; handed off to ULTRON 2. |
-| 2 | ULTRON 2 | 2026-10-25T11:28:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit, reproduction, activation stress testing, and architectural red-teaming. |
+| 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:40:00Z | 7911978 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
 
 ## Human coordinator checklist
 
