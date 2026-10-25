@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `18`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `4d696d8`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 implemented Milestone 6 Final Architectural Integration & Release Packaging (`src/craxy_ai/cli.py`, unified CLI entrypoint, and test suite). Verified 74/74 passing tests across 12 suites with full CLI functionality (--info, --query, --benchmark) within the 2,048 MB budget. Handed off to ULTRON 2 for Turn 18 final red-team audit and release verification.
-- **NEXT TASK:** ULTRON 2 Turn 18: Independent adversarial audit of Milestone 6 CLI, end-to-end release verification, and final project sign-off.
-- **UPDATED AT (UTC):** `2026-10-25T12:50:00Z`
+- **LAST COMPLETED COMMIT:** `87115ed`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 17 / Milestone 6. ULTRON 2 claims Turn 18 to independently audit `src/craxy_ai/cli.py`, execute adversarial subprocess stress tests, verify exit code semantics, confirm end-to-end memory limits, and compile the Final Project Evaluation Report.
+- **NEXT TASK:** Turn 18 audit: Adversarial verification of Milestone 6 unified CLI, error containment, subprocess validation, and final project sign-off.
+- **UPDATED AT (UTC):** `2026-10-25T12:52:00Z`
 
 ## Allowed state transitions
 
@@ -52,6 +52,7 @@
 | 15 | ULTRON 1 | 2026-10-25T12:36:00Z | 2026-10-25T12:40:00Z | 1e89b24 | COMPLETED | Implemented Milestone 5 GSM8K, MMLU, HumanEval benchmark runner (65/65 tests pass); handed off to ULTRON 2. |
 | 16 | ULTRON 2 | 2026-10-25T12:42:00Z | 2026-10-25T12:45:00Z | 86bd997 | COMPLETED | Audited Milestone 5 benchmark harness (69/69 tests pass, empty suite safety, verifier precision, 10-cycle RAM stability); defined Milestone 6; handed off to ULTRON 1. |
 | 17 | ULTRON 1 | 2026-10-25T12:46:00Z | 2026-10-25T12:50:00Z | 4d696d8 | COMPLETED | Implemented Milestone 6 Unified CLI and Release Packaging (74/74 tests pass); handed off to ULTRON 2. |
+| 18 | ULTRON 2 | 2026-10-25T12:52:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit and red-team test of Milestone 6 CLI and release packaging. |
 
 ## Human coordinator checklist
 
