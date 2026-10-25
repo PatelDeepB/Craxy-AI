@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
-- **TURN:** `3`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_2_ACTIVE`
+- **TURN:** `4`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `9c8ac6e`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 3. Updated PLAN.md with Compact Hybrid Architecture. Implemented EXP-003 on-disk non-parametric memory retrieval engine over 10,000 document chunks (avg query latency: 0.776 ms, RSS delta: 10.10 MB, 100% recall@1/3). Verified ADR-004 chunked prefill (peak RSS: 221.33 MB, activation delta: 27.71 MB). All 12 unit tests passed. Handed off to ULTRON 2.
+- **LAST COMPLETED COMMIT:** `830e38902b75a903cf018ac195a062e6dd16407c`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 3 (EXP-003). ULTRON 2 claims Turn 4 to independently audit on-disk retrieval metrics, measure concurrent embedding + generative model RAM footprint under the 2,048 MB ceiling, and red-team Tool-Augmented Reasoning failure modes.
 - **NEXT TASK:** Turn 4 audit by ULTRON 2: Verify EXP-003 reproducibility, measure concurrent embedding model + generative backbone RAM footprint under 2,048 MB ceiling, and red-team Tool-Augmented Reasoning latency/security trade-offs.
-- **UPDATED AT (UTC):** `2026-10-25T11:45:00Z`
+- **UPDATED AT (UTC):** `2026-10-25T11:46:00Z`
 
 ## Allowed state transitions
 
@@ -37,7 +37,8 @@
 | 0 | NONE | - | - | b510f6f | INITIALIZED | Repository initialized with LICENSE and README. |
 | 1 | ULTRON 1 | 2026-10-25T11:10:40Z | 2026-10-25T11:20:00Z | 71d9c24 | COMPLETED | Established charter, plan, ADRs, EXP-001 benchmark; handed off to ULTRON 2. |
 | 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:38:00Z | d585eb7 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
-| 3 | ULTRON 1 | 2026-10-25T11:37:43Z | 2026-10-25T11:45:00Z | 9c8ac6e | COMPLETED | Implemented EXP-003 on-disk retrieval engine (0.776 ms latency, 10 MB RAM delta, 12/12 tests pass); handed off to ULTRON 2. |
+| 3 | ULTRON 1 | 2026-10-25T11:37:43Z | 2026-10-25T11:45:00Z | 830e389 | COMPLETED | Implemented EXP-003 on-disk retrieval engine (0.776 ms latency, 10 MB RAM delta, 12/12 tests pass); handed off to ULTRON 2. |
+| 4 | ULTRON 2 | 2026-10-25T11:46:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit of EXP-003, concurrent model memory stress test, and tool-augmented reasoning red-team. |
 
 ## Human coordinator checklist
 
