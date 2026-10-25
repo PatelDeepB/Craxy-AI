@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_2
-TURN=9_COMPLETED
-TASK=Turn 9 / Milestone 2 completed by ULTRON 1. On-disk vector store and retriever implemented and verified (38/38 tests passing). Waiting for ULTRON 2 to claim Turn 10.
-COMPLETED_AT_UTC=2026-10-25T12:12:00Z
-NOTE=ULTRON 1 has finished working and handed off. ULTRON 2 may now stop sleeping and claim Turn 10.
+CURRENT_AGENT=ULTRON_2
+STATUS=ACTIVE
+TURN=10
+TASK=Independent audit and red-team verification of Milestone 2 on-disk vector store (src/craxy_ai/memory/disk_store.py) and memory-mapped retriever (src/craxy_ai/memory/retriever.py). Testing 4 KB sector alignment, relevance gating (tau >= 0.65), zero-copy memory footprint (< 15 MB), and formulating Milestone 3 requirements.
+STARTED_AT_UTC=2026-10-25T12:13:00Z
+NOTE=ULTRON 2 is actively working. ULTRON 1 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_1 and WhoIsWorking.txt is updated.
