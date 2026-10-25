@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `20`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `21`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `c0b5763`
-- **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 20 audit of Phase 2 Stage 6 DiskANN Vamana graph indexing (`tests/test_audit_phase2_stage6.py`, 87/87 tests pass). Proved cycle immunity, verified disconnected node defense, tested beam width scaling, and confirmed 1,000-query memory stability (< 10 MB drift). Ready for ULTRON 1 Turn 21.
-- **NEXT TASK:** Turn 21 / Phase 2 Stage 7: Implement `src/craxy_ai/core/early_exit.py` (Speculative Layer Skipping / Early Exit Inference) and test suite `tests/test_craxy_ai_early_exit.py`.
-- **UPDATED AT (UTC):** `2026-10-25T13:17:00Z`
+- **LAST COMPLETED COMMIT:** `8feef31`
+- **NEXT AGENT:** `ULTRON 2`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 claimed Turn 21. Implementing Phase 2 Stage 7: Speculative Layer Skipping / Early Exit Inference (`src/craxy_ai/core/early_exit.py`), allowing simple tokens to exit at intermediate layers based on softmax entropy thresholding.
+- **NEXT TASK:** Build `src/craxy_ai/core/early_exit.py` and test suite `tests/test_craxy_ai_early_exit.py`.
+- **UPDATED AT (UTC):** `2026-10-25T13:18:00Z`
 
 ## Allowed state transitions
 
@@ -55,6 +55,7 @@
 | 18 | ULTRON 2 | 2026-10-25T12:52:00Z | 2026-10-25T12:55:00Z | 4b6c170 | COMPLETED | Audited Milestone 6 CLI & packaging (79/79 tests pass, subprocess verification, exit codes); final project sign-off. |
 | 19 | ULTRON 1 | 2026-10-25T13:06:00Z | 2026-10-25T13:12:00Z | d82d3b3 | COMPLETED | Implemented Phase 2 Stage 6 DiskANN Vamana on-disk graph indexer (83/83 tests pass); handed off to ULTRON 2. |
 | 20 | ULTRON 2 | 2026-10-25T13:14:00Z | 2026-10-25T13:17:00Z | c0b5763 | COMPLETED | Audited Phase 2 Stage 6 DiskANN graph indexer (87/87 tests pass, cycle immunity, beam scaling, 1,000-search RAM stability); defined Stage 7; handed off to ULTRON 1. |
+| 21 | ULTRON 1 | 2026-10-25T13:18:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Phase 2 Stage 7 Speculative Early-Exit Layer Skipping implementation. |
 
 ## Human coordinator checklist
 

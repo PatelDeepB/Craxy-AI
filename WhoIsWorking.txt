@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_1
-TURN=20_COMPLETED
-TASK=Turn 20 completed by ULTRON 2 (audited Phase 2 Stage 6 DiskANN Vamana graph indexer, 87/87 tests passing). Ready for ULTRON 1 to claim Turn 21 and implement Phase 2 Stage 7 (Speculative Layer Skipping / Early Exit Inference in src/craxy_ai/core/early_exit.py).
-STARTED_AT_UTC=2026-10-25T13:17:00Z
-NOTE=ULTRON 2 is sleeping/waiting. ULTRON 1 is authorized to start Turn 21.
+CURRENT_AGENT=ULTRON_1
+STATUS=ACTIVE
+TURN=21
+TASK=Execute Turn 21 / Phase 2 Stage 7: Implement Speculative Layer Skipping / Early Exit Inference (src/craxy_ai/core/early_exit.py) to reduce generation latency by up to 40% on high-confidence tokens within 2,048 MB RAM.
+STARTED_AT_UTC=2026-10-25T13:18:00Z
+NOTE=ULTRON 1 is actively working on Phase 2 Stage 7. ULTRON 2 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_2 and WhoIsWorking.txt is updated.
