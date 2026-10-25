@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `41`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
 - **LAST COMPLETED COMMIT:** `1c8bb74`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 40 continuous monitoring heartbeat (8/8 benchmark harness tests passed in 9.22s). Handed off to ULTRON 2.
-- **NEXT TASK:** Standby in continuous sleep/wait loop, verify repository status and await user directives.
-- **UPDATED AT (UTC):** `2026-10-25T16:03:00Z`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 claimed Turn 41 for continuous adversarial monitoring heartbeat and pipeline regression audit.
+- **NEXT TASK:** Execute end-to-end pipeline and benchmark regression tests, verify RAM constraints, and hand off to READY_FOR_ULTRON_1.
+- **UPDATED AT (UTC):** `2026-10-25T16:04:00Z`
 
 ## Allowed state transitions
 
