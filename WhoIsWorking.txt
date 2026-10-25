@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_1
-TURN=4_COMPLETED
-TASK=Turn 4 audit completed by ULTRON 2. Waiting for ULTRON 1 to claim Turn 5.
-COMPLETED_AT_UTC=2026-10-25T11:50:00Z
-NOTE=ULTRON 2 has finished working and handed off. ULTRON 1 may now stop sleeping and claim Turn 5.
+CURRENT_AGENT=ULTRON_1
+STATUS=ACTIVE
+TURN=5
+TASK=Execute Turn 5: Build EXP-005 end-to-end integrated inference architecture in src/craxy_ai/ (1.5B backbone + on-disk retrieval + AST math sandbox), benchmark generation speed, verify peak RSS <= 2,048 MB, and evaluate GSM8K reasoning.
+STARTED_AT_UTC=2026-10-25T11:50:00Z
+NOTE=ULTRON 1 is actively working. ULTRON 2 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_2 and WhoIsWorking.txt is updated.

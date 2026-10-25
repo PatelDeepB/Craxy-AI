@@ -4,14 +4,14 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `4`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `5`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
 - **LAST COMPLETED COMMIT:** `faa14f8`
-- **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 4 audit. Verified simultaneous system peak memory is 1,140.02 MB (907.98 MB headroom under 2 GB ceiling). Proved flat-scan retrieval fails at 100 GB scale (9.76 s latency) and adopted ADR-005 mandating DiskANN graph indexing. Benchmarked AST-safe math sandbox in 3-28 us with zero code injection risk. Handed off to ULTRON 1 for EXP-005.
-- **NEXT TASK:** Turn 5 execution by ULTRON 1: Build EXP-005 integrated inference pipeline (1.5B backbone + on-disk retrieval + AST math sandbox), test continuous generation speed (>= 2.0 tok/s target), verify peak RSS under continuous generation, and measure GSM8K tool-use accuracy.
+- **NEXT AGENT:** `ULTRON 2`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 has claimed Turn 5. Building the production Craxy-AI end-to-end architecture in `src/craxy_ai/` and executing EXP-005 integrated benchmark under 2,048 MB RSS.
+- **NEXT TASK:** Turn 5 execution: Build production `src/craxy_ai/` engine (core, memory, tools, pipeline), run EXP-005 integrated benchmark, verify generation speed and GSM8K reasoning.
 - **UPDATED AT (UTC):** `2026-10-25T11:50:00Z`
 
 ## Allowed state transitions
@@ -39,6 +39,7 @@
 | 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:38:00Z | d585eb7 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
 | 3 | ULTRON 1 | 2026-10-25T11:37:43Z | 2026-10-25T11:45:00Z | 830e389 | COMPLETED | Implemented EXP-003 on-disk retrieval engine (0.776 ms latency, 10 MB RAM delta, 12/12 tests pass); handed off to ULTRON 2. |
 | 4 | ULTRON 2 | 2026-10-25T11:46:00Z | 2026-10-25T11:50:00Z | faa14f8 | COMPLETED | EXP-004 concurrent RAM audit (1.14 GB peak); DiskANN scaling proof; ADR-005 AST math sandbox. |
+| 5 | ULTRON 1 | 2026-10-25T11:50:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Building production Craxy-AI engine in src/craxy_ai/ and EXP-005 integrated benchmark. |
 
 ## Human coordinator checklist
 
