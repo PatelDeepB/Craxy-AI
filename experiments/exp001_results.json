@@ -1,11 +1,11 @@
 {
   "experiment_id": "EXP-001",
-  "timestamp_utc": "2026-10-25T11:15:52Z",
+  "timestamp_utc": "2026-10-25T11:29:32Z",
   "runtime_profile": {
-    "base_python_rss_mb": 190.19140625,
-    "torch_loaded_rss_mb": 190.19140625,
-    "torch_overhead_mb": 190.19140625,
-    "available_budget_mb": 1857.80859375
+    "base_python_rss_mb": 190.6171875,
+    "torch_loaded_rss_mb": 190.6171875,
+    "torch_overhead_mb": 190.6171875,
+    "available_budget_mb": 1857.3828125
   },
   "kv_cache_scaling": [
     {
@@ -14,7 +14,7 @@
       "bytes_per_elem": 2.0,
       "theoretical_total_mb": 64.0,
       "layer_tensor_mb": 2.0,
-      "rss_delta_mb": 2.96
+      "rss_delta_mb": 2.89
     },
     {
       "context_length": 512.0,
@@ -93,11 +93,11 @@
     "num_layers": 32.0,
     "layer_size_mb": 64.0,
     "total_model_disk_size_mb": 2048.0,
-    "peak_rss_mb": 288.39,
-    "min_rss_mb": 288.38,
+    "peak_rss_mb": 288.75,
+    "min_rss_mb": 288.74,
     "rss_drift_mb": 0.01,
-    "avg_layer_load_time_ms": 50.83,
-    "read_throughput_mb_s": 1259.11,
-    "full_pass_time_sec": 1.627
+    "avg_layer_load_time_ms": 42.36,
+    "read_throughput_mb_s": 1510.96,
+    "full_pass_time_sec": 1.355
   }
 }

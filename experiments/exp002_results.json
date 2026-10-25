@@ -1,0 +1,95 @@
+{
+  "experiment_id": "EXP-002",
+  "timestamp_utc": "2026-10-25T11:33:32Z",
+  "prefill_activation_peaks": [
+    {
+      "context_length": 512.0,
+      "hidden_dim": 4096.0,
+      "intermediate_dim": 14336.0,
+      "activation_delta_mb": 148.86,
+      "peak_rss_mb": 979.76
+    },
+    {
+      "context_length": 1024.0,
+      "hidden_dim": 4096.0,
+      "intermediate_dim": 14336.0,
+      "activation_delta_mb": 142.94,
+      "peak_rss_mb": 1122.7
+    },
+    {
+      "context_length": 2048.0,
+      "hidden_dim": 4096.0,
+      "intermediate_dim": 14336.0,
+      "activation_delta_mb": 269.09,
+      "peak_rss_mb": 1391.79
+    },
+    {
+      "context_length": 4096.0,
+      "hidden_dim": 4096.0,
+      "intermediate_dim": 14336.0,
+      "activation_delta_mb": 276.79,
+      "peak_rss_mb": 1668.57
+    }
+  ],
+  "allocator_drift_no_gc": {
+    "iterations": 100.0,
+    "initial_rss_mb": 1669.59,
+    "peak_rss_mb": 1670.57,
+    "final_rss_mb": 1670.57,
+    "drift_mb": 0.97
+  },
+  "moe_backbone_memory_analysis": [
+    {
+      "architecture_name": "Llama-3-70B Backbone",
+      "hidden_dim": 8192,
+      "num_layers": 80,
+      "vocab_size": 128256,
+      "embedding_params": 1050673152,
+      "attention_params": 21474836480,
+      "lm_head_params": 1050673152,
+      "total_backbone_params": 23576182784,
+      "memory_fp16_mb": 44968.0,
+      "memory_int8_mb": 22484.0,
+      "memory_int4_mb": 11242.0,
+      "fits_in_2gb_ram": false
+    },
+    {
+      "architecture_name": "Mixtral-8x22B Backbone",
+      "hidden_dim": 6144,
+      "num_layers": 56,
+      "vocab_size": 32000,
+      "embedding_params": 196608000,
+      "attention_params": 8455716864,
+      "lm_head_params": 196608000,
+      "total_backbone_params": 8848932864,
+      "memory_fp16_mb": 16878.0,
+      "memory_int8_mb": 8439.0,
+      "memory_int4_mb": 4219.5,
+      "fits_in_2gb_ram": false
+    },
+    {
+      "architecture_name": "Compact-64x1.5B Backbone",
+      "hidden_dim": 2048,
+      "num_layers": 28,
+      "vocab_size": 32000,
+      "embedding_params": 65536000,
+      "attention_params": 469762048,
+      "lm_head_params": 65536000,
+      "total_backbone_params": 600834048,
+      "memory_fp16_mb": 1146.0,
+      "memory_int8_mb": 573.0,
+      "memory_int4_mb": 286.5,
+      "fits_in_2gb_ram": true
+    }
+  ],
+  "moe_expert_io_metrics": {
+    "num_layers": 32.0,
+    "experts_per_layer": 2.0,
+    "expert_size_mb": 16.0,
+    "total_bytes_read_mb": 1024.0,
+    "total_token_io_sec": 0.405,
+    "throughput_mb_s": 2526.12,
+    "theoretical_max_tokens_per_sec": 2.47,
+    "avg_expert_read_ms": 6.25
+  }
+}

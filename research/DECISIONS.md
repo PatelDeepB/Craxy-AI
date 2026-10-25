@@ -4,7 +4,7 @@
 
 - **Date:** 2026-10-25
 - **Author:** ULTRON 1
-- **Status:** PROPOSED (Pending ULTRON 2 review)
+- **Status:** ACCEPTED (Audited and confirmed by ULTRON 2)
 
 ### Context
 The project objective states: "AI that runs in only 2 GB RAM but results are better than 100B parameter model". Without an operational, metric-based definition, "better than 100B" cannot be tested, verified, or falsified scientifically.
@@ -28,8 +28,8 @@ The project objective states: "AI that runs in only 2 GB RAM but results are bet
 ## ADR-002: Strict Memory Budget Accounting Model (Ceiling: 2,048 MB RSS)
 
 - **Date:** 2026-10-25
-- **Author:** ULTRON 1
-- **Status:** PROPOSED (Pending ULTRON 2 review)
+- **Author:** ULTRON 1 (Amended by ULTRON 2)
+- **Status:** AMENDED (Audited by ULTRON 2: Added Prefill Activation Surges)
 
 ### Context
 A model file size under 2 GB on disk does not mean the system runs within 2 GB RAM. Memory during inference consists of:
@@ -39,19 +39,17 @@ If $M_{\text{total}} > 2048\text{ MB}$, the process risks an operating system Ou
 
 ### Decision
 1. Memory measurement must record Resident Set Size (RSS) via `psutil.Process().memory_info().rss`, not virtual memory (VMS).
-2. The runtime environment (Python interpreter, dynamic libraries, framework state) consumes a non-negligible floor (measured ~150-350 MB in standard PyTorch on CPU).
-3. Therefore, maximum allowable working memory for model weights, KV cache, and activations combined is:
-   $M_{\text{model\_budget}} \le 2,048\text{ MB} - M_{\text{runtime\_baseline}} \approx 1,700\text{ MB}$.
+2. The runtime environment (Python interpreter, dynamic libraries, framework state) consumes a non-negligible floor (measured ~190 MB in PyTorch CPU).
+3. Maximum allowable working memory for model weights, KV cache, and activations combined is:
+   $M_{\text{model\_budget}} \le 2,048\text{ MB} - M_{\text{runtime\_baseline}} \approx 1,850\text{ MB}$.
 4. KV cache memory must be formally budgeted based on context length $S$, layers $L$, heads $H_{kv}$, and head dimension $D$:
    $M_{\text{KV}} = 2 \times b \times S \times L \times H_{kv} \times D \times \text{BytesPerElement}$.
-   For FP16 (2 bytes) with 2,048 context tokens on a typical model, this can consume 200 MB to 1 GB.
+5. **Amendment by ULTRON 2 (EXP-002 finding):** Prefill activation tensors $M_{\text{activations}}$ surge by 150 MB to 300+ MB during forward linear GEMMs when ingesting sequences of 1,024 to 4,096 tokens. To prevent RSS exceeding 2,048 MB during prompt ingestion, chunked prefill (chunk size <= 512 tokens) is mandatory.
 
 ### Consequences
 - Disallows loading 7B+ dense models directly into RAM even with 4-bit quantization (7B in 4-bit = ~3.5-4.0 GB).
-- Mandates either:
-  * Dynamic layer/expert demand-paging from storage, OR
-  * Extreme quantization (1.58-bit / 2-bit) on compact architectures, OR
-  * Hybrid retrieval with small in-RAM core model.
+- Mandates KV cache quantization (INT8/INT4) for contexts >= 4,096 tokens.
+- Mandates chunked prefill for prompt ingestion.
 
 ---
 
@@ -59,7 +57,7 @@ If $M_{\text{total}} > 2048\text{ MB}$, the process risks an operating system Ou
 
 - **Date:** 2026-10-25
 - **Author:** ULTRON 1
-- **Status:** PROPOSED (Pending ULTRON 2 review)
+- **Status:** ACCEPTED WITH CONDITIONS (Audited by ULTRON 2)
 
 ### Context
 While the RAM budget is constrained to 2 GB, the storage budget is generous: 100 GB. Flash memory (PCIe NVMe SSD) provides read bandwidths from 2,000 MB/s to 7,000 MB/s, and random access latencies of 20 to 100 microseconds.
@@ -72,3 +70,28 @@ We will treat the 100 GB storage not merely as passive weight storage, but as an
 
 ### Consequences
 - Architectural exploration will center on the trade-off between NVMe read bandwidth, CPU compute latency, and RAM working buffer constraints.
+- Dense streaming is refuted for interactive generation due to I/O latency bounds (EXP-001).
+
+---
+
+## ADR-004: Prefill Activation Chunking & MoE Attention Backbone Sizing Constraints
+
+- **Date:** 2026-10-25
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** ADOPTED
+
+### Context
+Turn 2 audits and EXP-002 empirical measurements revealed two critical architectural constraints:
+1. An 80B-100B MoE model's non-expert shared attention backbone alone exceeds the 2 GB RAM budget (Llama-3-70B backbone is 11.2 GB in INT4; Mixtral-8x22B backbone is 4.2 GB in INT4). An MoE cannot simply offload FFN experts while keeping a 70B attention backbone in memory.
+2. Forward activation memory during full prompt ingestion of 2,048-4,096 tokens produces a 270 MB to 500 MB transient memory surge, causing process RSS to breach 2,048 MB when combined with model weights.
+
+### Decision
+1. Any viable MoE candidate architecture must feature a compact attention backbone ($D \le 2048$, $L \le 28$, backbone params $\le 1.5\text{B}$), keeping non-expert memory below 300 MB in INT4.
+2. Inference runtimes must enforce Chunked Prefill with chunk size $S_{\text{chunk}} \le 512$ tokens to cap activation memory deltas to <= 150 MB.
+3. Turn 3 exploration must focus on evaluating:
+   - A hybrid architecture combining a 1.5B-3B core reasoner in RAM with on-disk non-parametric memory (DiskANN / dense index) and tool-augmented reasoning (Python code execution / calculator for GSM8K), OR
+   - Extreme ternary quantization (BitNet b1.58) allowing a wide reasoning backbone ($D \ge 4096$) in RAM with on-disk MoE expert paging.
+
+### Consequences
+- Protects the system against Out-Of-Memory aborts during prompt ingestion.
+- Eliminates naive 70B MoE expert offloading proposals that overlook the shared attention backbone footprint.

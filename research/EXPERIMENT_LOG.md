@@ -67,3 +67,65 @@ Simulated 32 transformer layers of 64.0 MB each (total model size on disk = 2,04
 3. **Implication for Architecture:** Naive sequential dense streaming of a 100B model from disk is refuted as an interactive solution. To achieve target interactive speeds (>= 2 tokens/s), the architecture MUST either:
    - Use **Sparse Mixture-of-Experts (MoE)** where only active experts (~20-50 MB per layer) are loaded from disk per token (reducing I/O by 80-90%), OR
    - Use a **Retrieval-Augmented Core Reasoner** where a 1.5B model stays resident in RAM (~800 MB) and queries the 100 GB storage as non-parametric memory via fast vector search.
+
+---
+
+## EXP-002: Independent Audit of Activation Peaks, Allocator Drift, and MoE Backbone Lower Bounds
+
+- **Date:** 2026-10-25
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script:** `experiments/exp002_activation_and_moe_audit.py`
+- **Test Suite:** `tests/test_activation_and_moe_audit.py` (4/4 tests passed; all 8 repository tests pass)
+- **Artifact:** `experiments/exp002_results.json`
+
+### 1. Objective and Red-Team Challenge
+- **Challenge to EXP-001:** ULTRON 1's memory accounting in ADR-002 modeled only $M_{\text{weights}} + M_{\text{KV}} + M_{\text{runtime}}$, testing computation via a trivial 4 KB 1D vector multiply. In real transformer execution:
+  1. What is the actual activation tensor peak ($M_{\text{activations}}$) during prompt prefill ($S \in \{512, 1024, 2048, 4096\}$)?
+  2. Does heap memory drift uncontrollably over 100 consecutive decoding steps without manual `gc.collect()`?
+  3. Can an 80B-100B MoE model's non-expert attention backbone fit inside the 2,048 MB RAM ceiling?
+  4. What is the real NVMe I/O throughput when reading non-contiguous top-2 expert slices across 32 layers?
+
+### 2. Empirical Results
+
+#### A. Prefill Activation Peaks ($D=4096, D_{intermediate}=14336$)
+| Context Length (tokens) | Activation Delta | Peak Process RSS | Headroom under 2,048 MB | Risk Level |
+|---|---|---|---|---|
+| 512 | +148.86 MB | 979.76 MB | 1,068.24 MB | Low |
+| 1,024 | +142.94 MB | 1,122.70 MB | 925.30 MB | Moderate |
+| 2,048 | +269.09 MB | 1,391.79 MB | 656.21 MB | High |
+| 4,096 | +276.79 MB | 1,668.57 MB | 379.43 MB | Critical (OOM danger) |
+
+*Critical Vulnerability Found:* At context length 4,096, process RSS surges to 1,668.57 MB during forward projections. If a 500 MB model layer or resident backbone is present simultaneously, peak memory reaches 2,168 MB, exceeding physical budget and triggering OS OOM termination. **Mitigation required:** Mandatory Chunked Prefill (chunk size <= 512 tokens).
+
+#### B. Memory Allocator Drift (100 Iterations without manual GC)
+| Metric | Measured Value | Threshold | Finding |
+|---|---|---|---|
+| Initial RSS | 1,669.59 MB | - | Warm allocator pool |
+| Final RSS | 1,670.57 MB | - | Stable heap |
+| 100-step Drift | 0.97 MB | <= 10.0 MB | PASS (Zero significant fragmentation) |
+
+*Finding:* PyTorch CPU allocator stabilizes after initial allocation. Manual `gc.collect()` per layer is unnecessary and should be avoided to prevent latency penalties.
+
+#### C. MoE Shared Attention Backbone Lower Bound Analysis
+| Architecture | Hidden Dim | Layers | Backbone Params | FP16 Footprint | INT4 Footprint | Fits in 2 GB RAM? |
+|---|---|---|---|---|---|---|
+| Llama-3-70B Backbone | 8,192 | 80 | 23.58 Billion | 44,968 MB | 11,242 MB | **REFUTED (FALSE)** |
+| Mixtral-8x22B Backbone | 6,144 | 56 | 8.85 Billion | 16,878 MB | 4,219.5 MB | **REFUTED (FALSE)** |
+| Compact-64x1.5B Backbone | 2,048 | 28 | 0.60 Billion | 1,146 MB | 286.5 MB | **CONFIRMED (TRUE)** |
+
+*Architectural Refutation:* An 80B-100B MoE cannot be constructed by simply taking an existing 70B/8x22B model and offloading experts to disk. The shared attention backbone alone exceeds the 2 GB budget by 2x to 5x. An MoE candidate must use a compact backbone ($D \le 2048, \text{backbone params} \le 1.5\text{B}$).
+
+#### D. Non-Contiguous Expert Disk Read Throughput
+Simulated 32 layers, reading 2 distinct candidate experts of 16 MB each (64 read operations per token, 1,024 MB total read).
+
+| Metric | Measured Value | Target | Status |
+|---|---|---|---|
+| Total Bytes Read per Token | 1,024 MB | - | 2 active experts x 32 layers |
+| Total Token I/O Latency | 0.405 s | <= 0.50 s | PASS |
+| NVMe Read Throughput | 2,526.12 MB/s | - | High bandwidth |
+| Theoretical Max Throughput (I/O only) | 2.47 tokens/s | >= 2.0 tokens/s | PASS |
+| Average Single-Expert Seek & Read | 6.25 ms | <= 10.0 ms | PASS |
+
+*Bottleneck Warning:* While pure I/O latency allows 2.47 tokens/s, adding CPU GEMM compute latency (~0.35 s across 32 layers) will drop total throughput to ~1.33 tokens/s unless expert loading is asynchronously prefetched and pipelined with attention computation.
+
