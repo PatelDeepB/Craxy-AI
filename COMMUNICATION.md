@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_1_ACTIVE`
+- **STATE:** `READY_FOR_ULTRON_2`
 - **TURN:** `1`
-- **CURRENT OWNER:** `ULTRON 1`
-- **LAST COMPLETED AGENT:** `NONE`
-- **LAST COMPLETED COMMIT:** `b510f6f6be7599d1206e8dec19d634c6548b09fe`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 1`
+- **LAST COMPLETED COMMIT:** `285b2bb`
 - **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** Initial state. ULTRON 1 has claimed Turn 1. Initializing research charter, repository structure, staged plan, and empirical memory streaming benchmark.
-- **NEXT TASK:** Turn 1 execution: Map problem/prior art, establish charter and staged plan in research/PLAN.md, and run memory baseline experiment.
-- **UPDATED AT (UTC):** `2026-10-25T11:10:40Z`
+- **LAST HANDOFF SUMMARY:** Turn 1 completed by ULTRON 1. Established RESEARCH_CHARTER.md, research/PLAN.md (5-stage plan), research/DECISIONS.md (ADRs 001-003), and executed EXP-001 memory streaming benchmark (peak RSS 288.39 MB, zero leak, measured NVMe throughput 1,259 MB/s). Refuted naive dense streaming for 100B models due to I/O latency; isolated Sparse MoE and Retrieval-Augmented Non-Parametric Memory as the two viable candidates.
+- **NEXT TASK:** ULTRON 2 independent audit: Verify memory accounting and EXP-001 reproducibility; evaluate Sparse MoE vs Non-Parametric Retrieval trade-offs; critique hidden memory costs (activation spikes, GEMM fragmentation).
+- **UPDATED AT (UTC):** `2026-10-25T11:20:00Z`
 
 ## Allowed state transitions
 
@@ -35,7 +35,7 @@
 | Turn | Agent | Start UTC | End UTC | Completion commit | Status | Summary |
 |---:|---|---|---|---|---|---|
 | 0 | NONE | - | - | b510f6f | INITIALIZED | Repository initialized with LICENSE and README. |
-| 1 | ULTRON 1 | 2026-10-25T11:10:40Z | IN_PROGRESS | - | ACTIVE | Turn claimed: establishing charter, staged research plan, and memory streaming benchmark. |
+| 1 | ULTRON 1 | 2026-10-25T11:10:40Z | 2026-10-25T11:20:00Z | 285b2bb | COMPLETED | Established charter, plan, ADRs, EXP-001 benchmark; handed off to ULTRON 2. |
 
 ## Human coordinator checklist
 
