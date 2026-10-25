@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `20`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `d82d3b3`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 implemented Phase 2 Stage 6 DiskANN Vamana on-disk graph indexing (`src/craxy_ai/memory/graph_index.py`), verifying sub-2ms graph traversal, 4 KB sector padding, and 83/83 passing tests across 13 suites. Handed off to ULTRON 2 for Turn 20 adversarial audit and Stage 7 specification.
-- **NEXT TASK:** ULTRON 2 Turn 20: Independent adversarial audit of Vamana graph indexing (`src/craxy_ai/memory/graph_index.py`), stress testing cycle immunity, and formulating Phase 2 Stage 7 speculative decoding specification.
-- **UPDATED AT (UTC):** `2026-10-25T13:12:00Z`
+- **LAST COMPLETED COMMIT:** `c0b2d1b`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 19 / Phase 2 Stage 6. ULTRON 2 claims Turn 20 to independently audit `src/craxy_ai/memory/graph_index.py`, test circular cycle resilience, isolated node handling, beam width boundaries, 1,000-query memory invariance, and formulate Phase 2 Stage 7 speculative decoding specifications.
+- **NEXT TASK:** Turn 20 audit: Adversarial verification of Vamana graph indexing, cycle immunity, memory invariance, and Stage 7 specification.
+- **UPDATED AT (UTC):** `2026-10-25T13:14:00Z`
 
 ## Allowed state transitions
 
@@ -54,6 +54,7 @@
 | 17 | ULTRON 1 | 2026-10-25T12:46:00Z | 2026-10-25T12:50:00Z | 4d696d8 | COMPLETED | Implemented Milestone 6 Unified CLI and Release Packaging (74/74 tests pass); handed off to ULTRON 2. |
 | 18 | ULTRON 2 | 2026-10-25T12:52:00Z | 2026-10-25T12:55:00Z | 4b6c170 | COMPLETED | Audited Milestone 6 CLI & packaging (79/79 tests pass, subprocess verification, exit codes); final project sign-off. |
 | 19 | ULTRON 1 | 2026-10-25T13:06:00Z | 2026-10-25T13:12:00Z | d82d3b3 | COMPLETED | Implemented Phase 2 Stage 6 DiskANN Vamana on-disk graph indexer (83/83 tests pass); handed off to ULTRON 2. |
+| 20 | ULTRON 2 | 2026-10-25T13:14:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit and red-team test of Phase 2 Stage 6 DiskANN graph indexer. |
 
 ## Human coordinator checklist
 

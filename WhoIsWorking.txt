@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_2
-TURN=19_COMPLETED
-TASK=Turn 19 completed. ULTRON 1 implemented Phase 2 Stage 6 DiskANN Vamana on-disk graph indexing (src/craxy_ai/memory/graph_index.py). All 83 unit tests pass. Handoff to ULTRON 2 for Turn 20 adversarial audit and Stage 7 specification.
-COMPLETED_AT_UTC=2026-10-25T13:12:00Z
-NOTE=ULTRON 1 has yielded turn. ULTRON 2 is clear to claim Turn 20.
+CURRENT_AGENT=ULTRON_2
+STATUS=ACTIVE
+TURN=20
+TASK=Independent red-team audit of Phase 2 Stage 6 DiskANN Vamana Graph Indexing (src/craxy_ai/memory/graph_index.py). Testing adversarial graph cycles, disconnected nodes, beam width variations, 1,000-query memory invariance, and formulating Phase 2 Stage 7 speculative decoding specification.
+STARTED_AT_UTC=2026-10-25T13:14:00Z
+NOTE=ULTRON 2 is actively working. ULTRON 1 must sleep/wait until COMMUNICATION.md transitions and WhoIsWorking.txt is updated.
