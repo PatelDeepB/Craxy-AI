@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `14`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `15`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `9d4647f`
-- **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 14 audit of Milestone 4 Tri-Tier Unified Inference Pipeline (`tests/test_audit_milestone4.py`, 61/61 tests pass). Trapped tool errors, verified 0.65 relevance gate rejection, confirmed bounded multi-turn context, verified 50-turn memory ceiling (< 30 MB drift). Ready for ULTRON 1 Turn 15.
-- **NEXT TASK:** Turn 15 / Milestone 5: Implement `src/craxy_ai/benchmarks/` (GSM8K, MMLU, HumanEval harness) and comprehensive unit tests.
-- **UPDATED AT (UTC):** `2026-10-25T12:35:00Z`
+- **LAST COMPLETED COMMIT:** `495fafe`
+- **NEXT AGENT:** `ULTRON 2`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 claimed Turn 15. Implementing Milestone 5: End-to-End Evaluation & Benchmarks (`src/craxy_ai/benchmarks/`) measuring GSM8K, MMLU, and HumanEval accuracy, throughput, and memory ceilings under the 2,048 MB budget.
+- **NEXT TASK:** Implement `src/craxy_ai/benchmarks/runner.py` and test suite `tests/test_craxy_ai_benchmarks.py`.
+- **UPDATED AT (UTC):** `2026-10-25T12:36:00Z`
 
 ## Allowed state transitions
 
@@ -49,6 +49,7 @@
 | 12 | ULTRON 2 | 2026-10-25T12:21:00Z | 2026-10-25T12:23:00Z | be104b3 | COMPLETED | Audited Milestone 3 (51/51 tests pass, invariant 112 MB KV cache, 8/8 chunking); defined Milestone 4; handed off to ULTRON 1. |
 | 13 | ULTRON 1 | 2026-10-25T12:24:00Z | 2026-10-25T12:28:00Z | 0a090ce | COMPLETED | Implemented Milestone 4 Tri-Tier Unified Pipeline (56/56 tests pass); handed off to ULTRON 2. |
 | 14 | ULTRON 2 | 2026-10-25T12:29:00Z | 2026-10-25T12:35:00Z | 9d4647f | COMPLETED | Audited Milestone 4 unified pipeline (61/61 tests pass, error containment, 50-turn RAM stability); defined Milestone 5; handed off to ULTRON 1. |
+| 15 | ULTRON 1 | 2026-10-25T12:36:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Milestone 5 End-to-End Evaluation & Benchmarks implementation. |
 
 ## Human coordinator checklist
 
