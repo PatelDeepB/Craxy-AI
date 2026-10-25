@@ -202,56 +202,57 @@ class CraxyPipeline:
         Transitions through IDLE -> PREFILL -> GENERATE -> TOOL_DISPATCH -> FINALIZE.
         """
         t_start = time.perf_counter()
-        self.state = PipelineState.PREFILL
+        try:
+            self.state = PipelineState.PREFILL
 
-        # Step 1: Retrieval
-        retrieved_texts = self._execute_retrieval(query_vector=query_vector)
-        is_rag_augmented = len(retrieved_texts) > 0
+            # Step 1: Retrieval
+            retrieved_texts = self._execute_retrieval(query_vector=query_vector)
+            is_rag_augmented = len(retrieved_texts) > 0
 
-        # Step 2: Context Assembly & Chunked Prefill
-        assembled_prompt, prompt_tokens = self._assemble_context(user_prompt, retrieved_texts)
-        prefill_res: PrefillResult = self.prefill_engine.ingest_context(total_seq_len=prompt_tokens)
+            # Step 2: Context Assembly & Chunked Prefill
+            assembled_prompt, prompt_tokens = self._assemble_context(user_prompt, retrieved_texts)
+            prefill_res: PrefillResult = self.prefill_engine.ingest_context(total_seq_len=prompt_tokens)
 
-        # Step 3: Autoregressive Generation & Tool Interception
-        self.state = PipelineState.GENERATE
-        executed_tools: List[Dict[str, Any]] = []
-        tokens_emitted = 0
-        response_tokens: List[str] = []
+            # Step 3: Autoregressive Generation & Tool Interception
+            self.state = PipelineState.GENERATE
+            executed_tools: List[Dict[str, Any]] = []
+            tokens_emitted = 0
+            response_tokens: List[str] = []
 
-        # Synthetic token simulation with autonomous tool calling detection
-        simulated_text = self._generate_simulated_tokens(user_prompt, retrieved_texts)
-        has_tag, tool_type, tool_payload = self.core.parse_syntax_tags(simulated_text)
+            # Synthetic token simulation with autonomous tool calling detection
+            simulated_text = self._generate_simulated_tokens(user_prompt, retrieved_texts)
+            has_tag, tool_type, tool_payload = self.core.parse_syntax_tags(simulated_text)
 
-        if has_tag and tool_type and tool_payload:
-            self.state = PipelineState.TOOL_DISPATCH
-            dispatch_info = self._execute_tool_dispatch(tool_type, tool_payload)
-            executed_tools.append(dispatch_info)
-            simulated_text = simulated_text.replace(
-                f"<<{tool_type}: {tool_payload}>>",
-                f"[Tool Result: {dispatch_info['output']}]"
+            if has_tag and tool_type and tool_payload:
+                self.state = PipelineState.TOOL_DISPATCH
+                dispatch_info = self._execute_tool_dispatch(tool_type, tool_payload)
+                executed_tools.append(dispatch_info)
+                simulated_text = simulated_text.replace(
+                    f"<<{tool_type}: {tool_payload}>>",
+                    f"[Tool Result: {dispatch_info['output']}]"
+                )
+
+            tokens_emitted = len(simulated_text.split())
+            self.core.kv_cache.append_kv(layer_idx=0, num_new_tokens=tokens_emitted)
+
+            # Step 4: Finalize
+            self.state = PipelineState.FINALIZE
+            self.conversation_history.append((user_prompt, simulated_text))
+            total_latency_ms = (time.perf_counter() - t_start) * 1000.0
+            peak_rss = psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
+
+            return PipelineOutput(
+                response=simulated_text,
+                retrieval_augmented=is_rag_augmented,
+                retrieved_chunks_count=len(retrieved_texts),
+                tool_calls=executed_tools,
+                tokens_generated=tokens_emitted,
+                total_latency_ms=round(total_latency_ms, 2),
+                peak_rss_mb=round(peak_rss, 2),
+                state=PipelineState.IDLE
             )
-
-        tokens_emitted = len(simulated_text.split())
-        self.core.kv_cache.append_kv(layer_idx=0, num_new_tokens=tokens_emitted)
-
-        # Step 4: Finalize
-        self.state = PipelineState.FINALIZE
-        self.conversation_history.append((user_prompt, simulated_text))
-        total_latency_ms = (time.perf_counter() - t_start) * 1000.0
-        peak_rss = psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
-
-        output = PipelineOutput(
-            response=simulated_text,
-            retrieval_augmented=is_rag_augmented,
-            retrieved_chunks_count=len(retrieved_texts),
-            tool_calls=executed_tools,
-            tokens_generated=tokens_emitted,
-            total_latency_ms=round(total_latency_ms, 2),
-            peak_rss_mb=round(peak_rss, 2),
-            state=PipelineState.IDLE
-        )
-        self.state = PipelineState.IDLE
-        return output
+        finally:
+            self.state = PipelineState.IDLE
 
     def _generate_simulated_tokens(
         self,
