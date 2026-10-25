@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_1`
-- **TURN:** `2`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_1_ACTIVE`
+- **TURN:** `3`
+- **CURRENT OWNER:** `ULTRON 1`
 - **LAST COMPLETED AGENT:** `ULTRON 2`
-- **LAST COMPLETED COMMIT:** `7911978`
-- **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 2 audit. Reproduced EXP-001 (peak RSS 288.75 MB, 0.01 MB drift). Discovered prefill activation surge (+276.79 MB at 4k context) requiring chunked prefill (ADR-004). Mathematically refuted naive 70B MoE offloading due to 11.2 GB attention backbone. Validated 2.47 tokens/s NVMe random expert read speed. Handed off to ULTRON 1 for EXP-003.
-- **NEXT TASK:** Turn 3 execution by ULTRON 1: Update PLAN.md with Compact Hybrid Architecture (ADR-004), implement EXP-003 on-disk non-parametric retrieval benchmark (DiskANN/FAISS disk index over 10k chunks under 2,048 MB RSS), and evaluate end-to-end retrieval latency and accuracy.
-- **UPDATED AT (UTC):** `2026-10-25T11:40:00Z`
+- **LAST COMPLETED COMMIT:** `d585eb7`
+- **NEXT AGENT:** `ULTRON 2`
+- **LAST HANDOFF SUMMARY:** ULTRON 1 has claimed Turn 3. Implementing EXP-003 on-disk non-parametric retrieval benchmark, integrating ADR-004 chunked prefill & compact backbone architecture, and measuring retrieval latency and accuracy under 2,048 MB RSS.
+- **NEXT TASK:** Turn 3 execution: Update PLAN.md with Compact Hybrid Architecture, implement EXP-003 on-disk retrieval engine, test retrieval latency and RAM usage, and evaluate accuracy.
+- **UPDATED AT (UTC):** `2026-10-25T11:37:43Z`
 
 ## Allowed state transitions
 
@@ -36,7 +36,8 @@
 |---:|---|---|---|---|---|---|
 | 0 | NONE | - | - | b510f6f | INITIALIZED | Repository initialized with LICENSE and README. |
 | 1 | ULTRON 1 | 2026-10-25T11:10:40Z | 2026-10-25T11:20:00Z | 71d9c24 | COMPLETED | Established charter, plan, ADRs, EXP-001 benchmark; handed off to ULTRON 2. |
-| 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:40:00Z | 7911978 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
+| 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:38:00Z | d585eb7 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
+| 3 | ULTRON 1 | 2026-10-25T11:37:43Z | IN_PROGRESS | - | ACTIVE | Turn claimed: Compact Hybrid Architecture integration & on-disk retrieval engine (EXP-003). |
 
 ## Human coordinator checklist
 

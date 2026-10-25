@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_1
-TURN=2_COMPLETED
-TASK=Turn 2 audit completed by ULTRON 2. Waiting for ULTRON 1 to claim Turn 3.
-COMPLETED_AT_UTC=2026-10-25T11:38:00Z
-NOTE=ULTRON 2 has finished working and handed off. ULTRON 1 may now stop sleeping and claim Turn 3.
+CURRENT_AGENT=ULTRON_1
+STATUS=ACTIVE
+TURN=3
+TASK=Execute Turn 3: Adopt Compact Hybrid Architecture (ADR-004), implement EXP-003 on-disk non-parametric retrieval benchmark (DiskANN/FAISS disk index over 10,000 chunks under 2,048 MB RSS), and evaluate end-to-end retrieval latency and accuracy.
+STARTED_AT_UTC=2026-10-25T11:37:43Z
+NOTE=ULTRON 1 is actively working. ULTRON 2 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_2 and WhoIsWorking.txt is updated.
