@@ -90,24 +90,26 @@ We identify five core technical pathways that leverage 100 GB storage while resp
 - **Status:** COMPLETED (EXP-002, commit `7911978` / `d585eb7`).
 - **Outcome:** Discovered prefill activation surge (+276 MB at 4k context) mandating chunked prefill ($S \le 512$, ADR-004). Mathematically refuted naive 70B MoE offloading due to 11.2 GB backbone. Verified NVMe random expert read speed (2,526 MB/s, 2.47 tokens/s).
 
-### Stage 2: On-Disk Non-Parametric Memory Engine (Turn 3 - Active)
-- **Objective:** Prototype and benchmark an on-disk non-parametric memory retrieval engine (DiskANN / FAISS disk index simulation over 10,000 document chunks) paired with a lightweight reasoning harness under strict <= 2,048 MB RSS.
-- **Hypothesis:** By memory-mapping an on-disk dense vector index and document store, nearest-neighbor retrieval can execute in < 50 ms with < 100 MB RAM delta, providing 100B-grade factual recall to a compact reasoning model while honoring ADR-004 chunked prefill.
+### Stage 2: On-Disk Non-Parametric Memory Engine (Turn 3 - COMPLETED)
+- **Status:** COMPLETED (EXP-003, commit `830e389`).
+- **Outcome:** Proved sub-millisecond retrieval (0.776 ms avg, p95: 1.086 ms) with 10.10 MB RAM delta via memory-mapping over 10,000 chunks. Verified 100% factual recall and ADR-004 chunked prefill (27.71 MB activation delta).
+
+### Stage 3: Concurrent System Memory & Tool Sandbox Audit (Turn 4 - COMPLETED)
+- **Status:** COMPLETED (EXP-004, commit `faa14f8` / `99b4a38`).
+- **Outcome:** Verified simultaneous system RAM footprint is 1,140.02 MB (907.98 MB headroom under 2 GB ceiling). Refuted flat-scan retrieval at 100 GB scale (9.76 s latency) and adopted ADR-005 mandating DiskANN graph indexing. Benchmarked in-process AST tool sandbox in 3-28 us with zero code injection risk.
+
+### Stage 4: Architectural Master Blueprint & System Design (Turn 5 - Active)
+- **Status:** COMPLETED ([research/ARCHITECTURE_BLUEPRINT.md](file:///c:/Deep_Patel_Projects/OpenSourceProjects/For_craxy/Craxy-AI/research/ARCHITECTURE_BLUEPRINT.md)).
+- **Outcome:** Formulated the definitive Craxy-AI Architectural Master Blueprint: Complete specification of CraxyCore (1.5B INT4 backbone), CraxyMemory (DiskANN on-disk store), CraxyTools (AST visitor sandbox), and CraxyOrchestrator (Tri-Tier Control Loop), accompanied by a formal mathematical memory and latency accounting model.
+
+### Stage 5: Integrated Tri-Tier Prototype & End-to-End Evaluation (Turns 6-8)
+- **Objective:** Construct the modular `src/craxy_ai/` production package implementing the master blueprint, and evaluate continuous generation speed (>= 2.0 tok/s target), peak process RSS under continuous generation, and GSM8K / MMLU / HumanEval quality parity against 70B/100B baselines.
 - **Deliverables:**
-  * Implementation of `experiments/exp003_non_parametric_retrieval.py`.
-  * Unit test suite `tests/test_non_parametric_retrieval.py`.
-  * Measurements: Peak RSS, query latency, chunked prefill activation stability, and factual QA accuracy.
-
-### Stage 3: Tool-Augmented Multi-Step Reasoning Engine (Turns 4-5)
-- **Objective:** Bridge the reasoning gap of compact models on GSM8K and HumanEval by integrating sandboxed Python code execution and multi-step verifiers.
-- **Deliverables:** Sandboxed tool execution loop executing under 2,048 MB RSS.
-
-### Stage 4: Integrated Compact Hybrid Prototype (Turns 6-8)
-- **Objective:** Combine the compact reasoner, on-disk knowledge index, and tool execution engine into a unified local inference runtime.
-- **Deliverables:** End-to-end prototype running on consumer CPU within 2,048 MB RSS and 100 GB storage.
-
-### Stage 5: Formal Charter Verification & Benchmark Audit (Turns 9-10)
-- **Objective:** Evaluate final hybrid system against Tier 1, Tier 2, and Tier 3 acceptance criteria on MMLU, GSM8K, HumanEval, and ARC-Challenge.
+  * `src/craxy_ai/core/` (INT4 backbone + INT8 KV cache + chunked prefill).
+  * `src/craxy_ai/memory/` (DiskANN memory-mapped vector engine).
+  * `src/craxy_ai/tools/` (In-process AST math execution engine).
+  * `src/craxy_ai/pipeline.py` (Unified inference pipeline).
+  * Comprehensive benchmark validation on MMLU, GSM8K, and HumanEval.
 
 ---
 
