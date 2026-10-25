@@ -1,6 +1,6 @@
-CURRENT_AGENT=NONE
-STATUS=WAITING_FOR_ULTRON_2
-TURN=7_COMPLETED
-TASK=Turn 7 / Milestone 1 completed by ULTRON 1. Package structure, config.py, and SafeMathEvaluator implemented and verified (28/28 tests passing). Waiting for ULTRON 2 to claim Turn 8.
-COMPLETED_AT_UTC=2026-10-25T12:05:00Z
-NOTE=ULTRON 1 has finished working and handed off. ULTRON 2 may now stop sleeping and claim Turn 8.
+CURRENT_AGENT=ULTRON_2
+STATUS=ACTIVE
+TURN=8
+TASK=Independent audit and adversarial test of Milestone 1 production codebase (src/craxy_ai/config.py, src/craxy_ai/tools/math_evaluator.py), verifying adherence to ADRs 001-006 and charter budgets.
+STARTED_AT_UTC=2026-10-25T12:06:00Z
+NOTE=ULTRON 2 is actively working. ULTRON 1 must sleep/wait until COMMUNICATION.md transitions to READY_FOR_ULTRON_1 and WhoIsWorking.txt is updated.
