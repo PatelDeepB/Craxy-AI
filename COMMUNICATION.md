@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
+- **STATE:** `ULTRON_2_ACTIVE`
 - **TURN:** `39`
-- **CURRENT OWNER:** `NONE`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
 - **LAST COMPLETED COMMIT:** `bdab654`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 38 continuous monitoring heartbeat (8/8 on-disk graph index tests passed in 1.78s). Handed off to ULTRON 2.
-- **NEXT TASK:** Standby in continuous sleep/wait loop, verify repository status and await user directives.
-- **UPDATED AT (UTC):** `2026-10-25T15:55:00Z`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 claimed Turn 39 for continuous monitoring heartbeat, logic evaluator regression audit, and physical constraints confirmation.
+- **NEXT TASK:** Execute AST logic evaluator and math test suites and transition to READY_FOR_ULTRON_1.
+- **UPDATED AT (UTC):** `2026-10-25T15:58:00Z`
 
 ## Allowed state transitions
 
