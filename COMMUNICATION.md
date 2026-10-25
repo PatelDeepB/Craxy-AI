@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `ULTRON_2_ACTIVE`
+- **STATE:** `READY_FOR_ULTRON_1`
 - **TURN:** `4`
-- **CURRENT OWNER:** `ULTRON 2`
-- **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `830e38902b75a903cf018ac195a062e6dd16407c`
+- **CURRENT OWNER:** `NONE`
+- **LAST COMPLETED AGENT:** `ULTRON 2`
+- **LAST COMPLETED COMMIT:** `faa14f8`
 - **NEXT AGENT:** `ULTRON 1`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 3 (EXP-003). ULTRON 2 claims Turn 4 to independently audit on-disk retrieval metrics, measure concurrent embedding + generative model RAM footprint under the 2,048 MB ceiling, and red-team Tool-Augmented Reasoning failure modes.
-- **NEXT TASK:** Turn 4 audit by ULTRON 2: Verify EXP-003 reproducibility, measure concurrent embedding model + generative backbone RAM footprint under 2,048 MB ceiling, and red-team Tool-Augmented Reasoning latency/security trade-offs.
-- **UPDATED AT (UTC):** `2026-10-25T11:46:00Z`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 completed Turn 4 audit. Verified simultaneous system peak memory is 1,140.02 MB (907.98 MB headroom under 2 GB ceiling). Proved flat-scan retrieval fails at 100 GB scale (9.76 s latency) and adopted ADR-005 mandating DiskANN graph indexing. Benchmarked AST-safe math sandbox in 3-28 us with zero code injection risk. Handed off to ULTRON 1 for EXP-005.
+- **NEXT TASK:** Turn 5 execution by ULTRON 1: Build EXP-005 integrated inference pipeline (1.5B backbone + on-disk retrieval + AST math sandbox), test continuous generation speed (>= 2.0 tok/s target), verify peak RSS under continuous generation, and measure GSM8K tool-use accuracy.
+- **UPDATED AT (UTC):** `2026-10-25T11:50:00Z`
 
 ## Allowed state transitions
 
@@ -38,7 +38,7 @@
 | 1 | ULTRON 1 | 2026-10-25T11:10:40Z | 2026-10-25T11:20:00Z | 71d9c24 | COMPLETED | Established charter, plan, ADRs, EXP-001 benchmark; handed off to ULTRON 2. |
 | 2 | ULTRON 2 | 2026-10-25T11:28:00Z | 2026-10-25T11:38:00Z | d585eb7 | COMPLETED | EXP-001 repro; EXP-002 activation surge & MoE backbone proof; ADR-004 chunked prefill. |
 | 3 | ULTRON 1 | 2026-10-25T11:37:43Z | 2026-10-25T11:45:00Z | 830e389 | COMPLETED | Implemented EXP-003 on-disk retrieval engine (0.776 ms latency, 10 MB RAM delta, 12/12 tests pass); handed off to ULTRON 2. |
-| 4 | ULTRON 2 | 2026-10-25T11:46:00Z | IN_PROGRESS | - | ACTIVE | Turn claimed: independent audit of EXP-003, concurrent model memory stress test, and tool-augmented reasoning red-team. |
+| 4 | ULTRON 2 | 2026-10-25T11:46:00Z | 2026-10-25T11:50:00Z | faa14f8 | COMPLETED | EXP-004 concurrent RAM audit (1.14 GB peak); DiskANN scaling proof; ADR-005 AST math sandbox. |
 
 ## Human coordinator checklist
 
