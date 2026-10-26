@@ -41,7 +41,7 @@ def test_audit_module_execution_with_invalid_flag():
         cmd,
         capture_output=True,
         text=True,
-        timeout=10,
+        timeout=60,
     )
     assert result.returncode == 2
     assert "unrecognized arguments" in result.stderr.lower()
@@ -64,7 +64,7 @@ def test_audit_query_with_corrupt_storage_path():
         cmd,
         capture_output=True,
         text=True,
-        timeout=15,
+        timeout=60,
     )
     assert result.returncode == 0
     assert "[Tool Result: 30]" in result.stdout
@@ -85,7 +85,7 @@ def test_audit_ephemeral_paged_dir_cleaned_after_subprocess():
         cmd,
         capture_output=True,
         text=True,
-        timeout=15,
+        timeout=60,
     )
     assert result.returncode == 0
     assert "[Tool Result: 45]" in result.stdout

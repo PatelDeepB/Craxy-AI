@@ -56,6 +56,14 @@ def _add_primary_modes(parser: argparse.ArgumentParser) -> None:
         metavar="CODE",
         help="Validate and test Python code via CraxyCodeAgent."
     )
+    group.add_argument(
+        "--eval",
+        "--dashboard",
+        dest="eval_mode",
+        action="store_true",
+        help="Run comprehensive Frontier Evaluation Suite & Telemetry Dashboard."
+    )
+
 
 
 def _add_gguf_flags(parser: argparse.ArgumentParser) -> None:
@@ -229,6 +237,15 @@ def _handle_chat(args: argparse.Namespace) -> int:
     return run_interactive_chat(config=cfg)
 
 
+def execute_eval() -> int:
+    """Execute Frontier Evaluation Suite and render Telemetry Dashboard."""
+    from src.craxy_ai.benchmarks.frontier_eval import FrontierEvaluationSuite, render_dashboard
+    suite = FrontierEvaluationSuite()
+    result = suite.run_full_evaluation()
+    print(render_dashboard(result))
+    return 0 if result.all_passed else 1
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     """CLI application entrypoint."""
     parser = build_parser()
@@ -255,7 +272,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return execute_code_patch(code_text=args.code_patch)
     if args.benchmark:
         return execute_benchmark(storage_dir=args.storage_dir)
+    if args.eval_mode:
+        return execute_eval()
     return 1
+
 
 
 if __name__ == "__main__":

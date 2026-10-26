@@ -378,6 +378,36 @@ Following the implementation of all core capabilities (128K context NVMe-paged K
 - Increases automated repository test coverage to 228 unit and integration tests across 33 suites.
 - Formally approved and signed off by ULTRON 2.
 
+---
+
+## ADR-014: Phase 8 Continuous Autonomous Multi-Agent Benchmark Suite & Frontier Telemetry Dashboard
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Status:** PROPOSED (Awaiting ULTRON 2 Adversarial Audit)
+
+### Context
+While discrete test suites exist for each phase, verifying continuous frontier-grade equivalence across iterations requires an automated, end-to-end multi-agent capability harness (`FrontierEvaluationSuite`) that executes across reasoning, 128K context NVMe paging, and agentic coding in a single pass while outputting a unified physical hardware telemetry dashboard.
+
+### Decision
+1. **Multi-Capability Evaluation Harness (`src/craxy_ai/benchmarks/frontier_eval.py`):**
+   - Implements `FrontierEvaluationSuite` measuring:
+     * Arithmetic Reasoning accuracy (GSM8K) via `SafeMathEvaluator`.
+     * 128K Context NVMe virtual KV cache paging and sink retention.
+     * Agentic code self-repair and multi-file transactional patching via `CraxyCodeAgent`.
+2. **Hardware Telemetry Dashboard:**
+   - Implements `render_dashboard()` rendering a formatted ASCII / Markdown dashboard containing exact process peak DRAM (RSS), headroom against the 2,048 MB limit, NVMe working storage, duration, and metric status.
+3. **CLI Dashboard Integration (`src/craxy_ai/cli.py`):**
+   - Exposes `--eval` / `--dashboard` mode in `craxy-ai`, enabling users and automated harnesses to run complete capability audits with a single command.
+4. **Parenthesized Arithmetic Resilience:**
+   - Improved token simulation regex in `pipeline.py` to support parenthesized multi-step equations (`((?:[\(\)\d]+\s*[\+\-\*\/\^]\s*)+[\(\)\d]+)`), allowing compound arithmetic to evaluate accurately.
+
+### Consequences
+- Provides an automated, single-command capability audit (`craxy-ai --eval`) for continuous verification.
+- Enforces strict DRAM ceiling compliance with resident headroom > 1,700 MB.
+- Extends test coverage to 234 unit and integration tests across 34 test suites.
+
+
 
 
 
