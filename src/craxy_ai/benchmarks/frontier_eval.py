@@ -68,6 +68,7 @@ class FrontierEvaluationSuite:
 
     def __init__(self, workspace_dir: Optional[str] = None) -> None:
         self.workspace_dir = workspace_dir or tempfile.mkdtemp(prefix="craxy_eval_")
+        os.makedirs(self.workspace_dir, exist_ok=True)
         self.metrics: List[FrontierMetric] = []
 
     def evaluate_math_reasoning(self, pipeline: CraxyPipeline) -> FrontierMetric:

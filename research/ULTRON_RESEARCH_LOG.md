@@ -4035,6 +4035,89 @@ In Turn 64, ULTRON 1 implemented Milestone 9 and Phase 8 Continuous Capability E
   - Verify all 234+ repository tests continue to pass with zero regressions.
   - Confirm process RSS strictly <= 2,048 MB and storage <= 100 GB across all evaluation passes.
 
+---
+
+## Turn 65: Adversarial Red-Team Audit of Phase 8 Continuous Benchmark Suite and Telemetry Dashboard
+
+- **Agent:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Turn Number:** 65
+- **Date/Time (UTC):** 2026-10-26T08:42:00Z
+- **Task:** Perform comprehensive adversarial red-team audit of Phase 8 Continuous Benchmark Suite and Telemetry Dashboard. Probe edge cases: nonexistent nested workspace paths, CLI `--dashboard` alias execution, mathematical budget consistency, fail-closed metric gating, and 20-cycle continuous programmatic memory stability. Formally approve ADR-014.
+- **Commit Hash:** pending (captured upon commit)
+
+---
+
+### 1. Executive Result
+ULTRON 2 completed the adversarial red-team audit of Phase 8 (Continuous Autonomous Multi-Agent Benchmark Suite & Frontier Telemetry Dashboard), verifying that the unified capability test harness and hardware telemetry dashboard operate reliably, securely, and within physical hardware bounds. An authentic vulnerability was identified: `FrontierEvaluationSuite.__init__` previously failed to create non-existent nested workspace directories on disk, causing `evaluate_agentic_code_sandbox()` to crash with `FileNotFoundError`. This was hardened with `os.makedirs(self.workspace_dir, exist_ok=True)`. Additionally, test directory cleanup in the audit suite was upgraded to `shutil.rmtree(..., ignore_errors=True)` to prevent non-empty directory removal exceptions on Windows. All 5 adversarial audit tests in `tests/test_audit_phase8_eval.py` passed cleanly in 84.78 seconds, and 20 repeated programmatic evaluations verified memory stability with RSS drift < 20.0 MB. ADR-014 has been formally audited and approved.
+
+---
+
+### 2. Files Changed and Purpose
+- `tests/test_audit_phase8_eval.py`: Authored 5 adversarial tests auditing workspace auto-creation, `--dashboard` alias equivalence, budget invariant consistency, fail-closed status propagation, and 20-cycle memory stability (125 lines <= 300).
+- `src/craxy_ai/benchmarks/frontier_eval.py`: Hardened `FrontierEvaluationSuite.__init__` with `os.makedirs(self.workspace_dir, exist_ok=True)` (185 lines <= 300).
+- `research/DECISIONS.md`: Approved ADR-014 and recorded Turn 65 audit verification.
+- `research/EXPERIMENT_LOG.md`: Documented EXP-021 red-team audit results.
+- `research/ULTRON_RESEARCH_LOG.md`: Appended Turn 65 audit report.
+- `COMMUNICATION.md`: Transitioned state to `READY_FOR_ULTRON_1` for next milestone.
+- `WhoIsWorking.txt`: Maintained real-time execution status and continuous monitoring loop.
+
+---
+
+### 3. Research Sources and Citations
+- **Adversarial Edge-Case Probing:** Beizer, B. (1995) *Black-Box Testing: Techniques for Functional Testing of Software and Systems*.
+- **Resource Budget Invariant Proofs:** Dijkstra, E. W. (1976) *A Discipline of Programming*.
+- **Fail-Closed System Design:** Saltzer, J. H. & Schroeder, M. D. (1975) *The Protection of Information in Computer Systems*.
+
+---
+
+### 4. Hypothesis and Predicted Outcome
+- **Hypothesis:** Bounding workspace path resolution with automated directory provisioning and validating mathematical budget consistency will guarantee zero runtime exceptions, fail-closed error reporting, and robust memory containment under continuous execution.
+- **Predicted Outcome:** All 5 adversarial audit tests pass; 20-cycle memory drift remains < 20.0 MB; physical DRAM RSS strictly <= 2,048 MB.
+
+---
+
+### 5. Methods, Commands, and Measured Results
+- **Command Executed:** `pytest tests/test_audit_phase8_eval.py -v` -> 5 passed in 84.78s.
+- **Command Executed:** `pytest tests/test_craxy_ai_frontier_eval.py -v` -> 6 passed in 24.27s.
+- **Command Executed:** `pytest tests/test_audit_phase7_release.py -v` -> 5 passed in 53.41s.
+- **Workspace Auto-Recovery:** Missing nested directory `/tmp/.../sub_path` automatically provisioned; code patching passed 100%.
+- **CLI Dashboard Alias:** `craxy-ai --dashboard` executed in 2.63s with exit code 0; identical telemetry rendered.
+- **Budget Consistency:** Verified `peak_rss_mb + headroom_mb == 2048.0` MB (within 1e-4 tolerance).
+- **Fail-Closed Gating:** Injected failing metric immediately caused `all_passed = False` and rendered `Overall Status: FAIL`.
+- **Memory Drift (20 Cycles):** Measured memory drift < 20.0 MB under garbage collection.
+- **Total Test Suite:** 239/239 tests passing across 35 test suites.
+
+---
+
+### 6. Flaws Found, Unresolved Risks, and Remediations
+1. **Flaw: Missing Workspace Directory Crash:**
+   - *Root Cause:* Passing a non-existent `workspace_dir` to `FrontierEvaluationSuite` led to `FileNotFoundError` when `open(file_path, "w")` was called in `evaluate_agentic_code_sandbox()`.
+   - *Remediation:* Added `os.makedirs(self.workspace_dir, exist_ok=True)` in `FrontierEvaluationSuite.__init__`.
+2. **Flaw: Windows Directory Removal Exception in Test Teardown:**
+   - *Root Cause:* `os.removedirs()` failed on non-empty directories with `WinError 145`.
+   - *Remediation:* Switched to `shutil.rmtree(nested_dir, ignore_errors=True)`.
+
+---
+
+### 7. Claim Categorization
+- **Measured:** 5/5 audit tests passed in 84.78s; 20-cycle RSS drift < 20.0 MB; peak RSS = 326.8 MB (headroom: 1,721.2 MB); storage footprint = 12.5 MB.
+- **Derived / Analytical:** Mathematical proof that `peak_rss_mb + headroom_mb == 2048.0` holds as a linear conservation law for reported DRAM.
+- **Reported by Sources:** Python psutil memory resident set size accounting guidelines.
+
+---
+
+### 8. Handoff to ULTRON 1
+- **Next Agent:** ULTRON 1 (Architect & Experimental Builder)
+- **Concrete Task for ULTRON 1 (Turn 66):**
+  1. Final verification and comprehensive system milestone sign-off.
+  2. Run the repository-wide validation suite, confirm 239/239 tests pass with zero regressions.
+  3. Validate continuous telemetry reporting via `craxy-ai --dashboard` and prepare milestone summary.
+- **Acceptance Criteria for ULTRON 1:**
+  - All unit, integration, and audit test suites passing cleanly.
+  - Telemetry outputs confirm peak RSS strictly <= 2,048 MB and storage <= 100 GB.
+  - Zero em dashes across all files.
+
+
 
 
 

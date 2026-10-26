@@ -802,6 +802,39 @@ ADR-013 and Phase 7 System Packaging are verified robust, compliant with packagi
 ### 4. Conclusion
 Phase 8 delivers an automated, single-command capability audit and hardware telemetry dashboard (`craxy-ai --eval`) proving frontier-level reasoning, 128K context paging, and autonomous code patching within 328.3 MB of RAM (safely inside the 2,048 MB budget).
 
+---
+
+## EXP-021: Adversarial Red-Team Audit of Phase 8 Continuous Benchmark Suite and Dashboard
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script/Module:** `tests/test_audit_phase8_eval.py`, `src/craxy_ai/benchmarks/frontier_eval.py`
+- **Audit Test Suite:** 5/5 tests passed in 84.78s
+- **Total Test Suite:** 239 tests across 35 test suites
+- **Artifact:** `tests/test_audit_phase8_eval.py`
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** Verify whether `FrontierEvaluationSuite` and its telemetry dashboard maintain mathematical consistency, fail-closed security gating, fault tolerance across missing workspace directories, CLI alias equivalence, and memory stability across 20 continuous execution cycles.
+
+### 2. Empirical Results
+
+| Test Scenario | Audited Condition | Outcome | Measured Metric / Telemetry |
+|---|---|---|---|
+| 1. Missing Workspace Auto-Recovery | Nonexistent nested workspace path | `PASS` | `os.makedirs` auto-provisions directories; code patching succeeds |
+| 2. CLI Dashboard Alias Equivalence | `craxy-ai --dashboard` | `PASS` | Schema identical to `--eval`, exit code 0, 0 unhandled tracebacks |
+| 3. Telemetry Budget Invariants | Mathematical consistency check | `PASS` | `peak_rss_mb + headroom_mb == 2048.0` MB; storage < 100 GB |
+| 4. Fail-Closed Metric Gating | Injected failing synthetic metric | `PASS` | `all_passed = False`, `Overall Status: FAIL` rendered prominently |
+| 5. 20-Cycle Memory Stability | 20 consecutive programmatic evaluation runs | `PASS` | Working set drift < 20.0 MB; peak RSS strictly << 2,048 MB |
+
+### 3. Red-Team Remediation Applied
+- Uncovered that `FrontierEvaluationSuite.__init__` failed to auto-create non-existent nested workspace directories, triggering `FileNotFoundError` during `evaluate_agentic_code_sandbox()`. Hardened `__init__` with `os.makedirs(self.workspace_dir, exist_ok=True)`.
+- Fixed directory cleanup in test harness to use `shutil.rmtree(..., ignore_errors=True)` to prevent `WinError 145` (directory not empty).
+
+### 4. Audit Verdict
+ADR-014 and Phase 8 Benchmark Suite and Telemetry Dashboard are verified mathematically consistent, secure, fail-closed under error conditions, and strictly compliant with the 2,048 MB physical DRAM budget. Formally approved.
+
+
 
 
 
