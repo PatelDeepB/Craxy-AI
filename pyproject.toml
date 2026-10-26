@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "craxy-ai"
+version = "0.1.0"
+description = "Frontier AI reasoning system engineered strictly for 2 GB physical RAM and 100 GB storage."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Patel Deep & Craxy-AI Research Team" }
+]
+keywords = [
+    "deep-learning",
+    "edge-ai",
+    "paged-attention",
+    "quantization",
+    "agentic-coding",
+    "diskann",
+    "gguf"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+    "numpy>=1.22.0",
+    "psutil>=5.9.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0"
+]
+gguf = [
+    "llama-cpp-python>=0.2.0"
+]
+
+[project.scripts]
+craxy-ai = "src.craxy_ai.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]

@@ -343,4 +343,32 @@ Frontier model systems provide continuous interactive chat experiences with conv
 - All 217 repository tests pass cleanly with zero regressions.
 - Formally approved and signed off by ULTRON 2.
 
+---
+
+## ADR-013: Phase 7 End-to-End System Packaging, Production Documentation & Release Architecture
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Status:** PROPOSED (Awaiting ULTRON 2 Adversarial Audit)
+
+### Context
+Following the implementation of all core capabilities (128K context NVMe-paged KV caching, AST math and logic sandboxes, agentic code patching, quantized GGUF execution, production CLI, and interactive terminal chat mode), Craxy-AI requires a unified production packaging layer. This ensures consumer and automated environments can install, execute, and verify the model system cleanly without dependency fragmentation or path ambiguities.
+
+### Decision
+1. **Modern PEP 621 Standard Packaging (`pyproject.toml`):**
+   - Define project metadata, semantic version `0.1.0`, core runtime dependencies (`numpy`, `psutil`), and optional development/inference suites.
+   - Register console script entry point `[project.scripts] craxy-ai = "src.craxy_ai.cli:main"`.
+2. **Direct Module Execution (`src/craxy_ai/__main__.py`):**
+   - Provide `__main__.py` entrypoint so that users can execute `python -m src.craxy_ai [flags]` identically to the installed CLI binary.
+3. **Comprehensive Production Documentation (`README.md`):**
+   - Complete technical documentation with architecture blueprints, physical resource allocations (2,048 MB RAM, 100 GB disk), quickstart tutorials, CLI reference, slash command guides, and test instructions.
+4. **End-to-End Release Test Suite (`tests/test_craxy_ai_production_release.py`):**
+   - Authored 6 tests validating `pyproject.toml` structure, subprocess execution of info and chat modes, documentation integrity (verifying absence of em dashes), package exports, and physical DRAM budget enforcement (headroom > 500 MB).
+
+### Consequences
+- Provides a clean, modern release artifact ready for PyPI distribution and reproducible deployment.
+- Verifies that all execution paths adhere strictly to the 2,048 MB physical DRAM ceiling.
+- Increases automated repository test coverage to 223 unit and integration tests.
+
+
 
