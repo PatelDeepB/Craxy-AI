@@ -269,11 +269,12 @@ class CraxyPipeline:
         target_prompt = prompt.split("User:")[-1] if "User:" in prompt else prompt
         lower_prompt = target_prompt.lower()
         if "calculate" in lower_prompt or "compute" in lower_prompt or any(op in lower_prompt for op in ["+", "*", "/"]):
-            math_match = re.search(r"(\d+(?:\s*[\+\-\*\/\^]\s*\d+)+)", target_prompt)
+            math_match = re.search(r"((?:[\(\)\d]+\s*[\+\-\*\/\^]\s*)+[\(\)\d]+)", target_prompt)
             if math_match:
                 expr = math_match.group(1).strip()
                 return f"Let me compute this using precision tools: <<calc: {expr}>>. The solution is confirmed."
             return "Computing: <<calc: 125 * 8 + 42>>. The verified answer is ready."
+
 
         if "sort" in lower_prompt or "algorithmic" in lower_prompt or "code" in lower_prompt:
             if "[" in target_prompt and "]" in target_prompt:
