@@ -202,6 +202,13 @@ def execute_query(
     try:
         output: PipelineOutput = pipeline.run_query(user_prompt=query_text, use_gguf=bool(use_gguf or gguf_path))
         _print_query_output(output)
+        return 0
+    except Exception as err:
+        print("-" * 65)
+        print("Craxy-AI Query Execution Error:")
+        print(f"Error:                  {err}")
+        print("-" * 65)
+        return 1
     finally:
         if paged_cache:
             paged_cache.close()
@@ -209,7 +216,6 @@ def execute_query(
             gguf_engine.close()
         if temp_dir and os.path.exists(temp_dir):
             shutil.rmtree(temp_dir, ignore_errors=True)
-    return 0
 
 
 def execute_code_patch(code_text: str) -> int:
