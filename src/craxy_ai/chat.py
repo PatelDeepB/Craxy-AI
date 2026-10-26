@@ -65,8 +65,9 @@ class CraxyChatSession:
 
     def handle_slash_command(self, cmd: str) -> str:
         """Evaluate internal slash meta-command."""
-        clean_cmd = cmd.strip().lower()
-        if clean_cmd == "/help":
+        tokens = cmd.strip().lower().split()
+        root_cmd = tokens[0] if tokens else ""
+        if root_cmd == "/help":
             return (
                 "Available commands:\n"
                 "  /help  - Show this help message\n"
@@ -75,17 +76,17 @@ class CraxyChatSession:
                 "  /exit  - End the chat session\n"
                 "  /quit  - End the chat session"
             )
-        if clean_cmd == "/clear":
+        if root_cmd == "/clear":
             self.history = [ChatMessage(role="system", content=self.config.system_prompt)]
             return "Conversation history cleared."
-        if clean_cmd == "/info":
+        if root_cmd == "/info":
             mem = self.pipeline.get_memory_summary()
             turns = self.get_turn_count()
             return (
                 f"Active Turns: {turns} | Process RSS: {mem['current_rss_mb']:.1f} MB | "
                 f"Headroom: {mem['headroom_mb']:.1f} MB (Budget <= 2048 MB)"
             )
-        if clean_cmd in ("/exit", "/quit"):
+        if root_cmd in ("/exit", "/quit"):
             self.is_active = False
             return "Session terminated. Goodbye!"
         return f"Unknown command: {cmd}. Type /help for available commands."
@@ -118,20 +119,24 @@ class CraxyChatSession:
 
         self.history.append(ChatMessage(role="user", content=stripped))
         prompt = self._build_context_prompt(stripped)
-        output: PipelineOutput = self.pipeline.run_query(
-            user_prompt=prompt,
-            use_gguf=bool(self.config.use_gguf or self.config.gguf_path),
-        )
-
-        self._page_conversation_block(len(stripped) + len(output.response))
-        self.history.append(
-            ChatMessage(
-                role="assistant",
-                content=output.response,
-                tool_calls=output.tool_calls,
+        try:
+            output: PipelineOutput = self.pipeline.run_query(
+                user_prompt=prompt,
+                use_gguf=bool(self.config.use_gguf or self.config.gguf_path),
             )
-        )
-        return output.response
+            self._page_conversation_block(len(stripped) + len(output.response))
+            self.history.append(
+                ChatMessage(
+                    role="assistant",
+                    content=output.response,
+                    tool_calls=output.tool_calls,
+                )
+            )
+            return output.response
+        except Exception as err:
+            err_msg = f"Inference execution error: {err}"
+            self.history.append(ChatMessage(role="assistant", content=err_msg))
+            return err_msg
 
     def get_history(self) -> List[ChatMessage]:
         """Return the complete list of conversation turns."""
