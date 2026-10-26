@@ -9,6 +9,22 @@ from src.craxy_ai.tools.logic_types import (
     StepLimitExceededError,
 )
 from src.craxy_ai.tools.math_evaluator import EvaluationResult, SafeMathEvaluator
+from src.craxy_ai.tools.code_agent_types import (
+    AgenticCodeError,
+    CodeAgentError,
+    FileEdit,
+    FilePatch,
+    PatchApplicationError,
+    PatchHunk,
+    PatchMatchError,
+    PatchResult,
+    PatchSyntaxError,
+    RollbackError,
+    SandboxExecutionResult,
+    SecurityBoundaryError,
+    SyntaxValidationError,
+)
+from src.craxy_ai.tools.code_agent import CraxyCodeAgent, AgenticCodeEngine
 
 __all__ = [
     "SafeMathEvaluator",
@@ -17,4 +33,19 @@ __all__ = [
     "LogicEvaluationResult",
     "SecurityViolationError",
     "StepLimitExceededError",
+    "CraxyCodeAgent",
+    "AgenticCodeEngine",
+    "FileEdit",
+    "FilePatch",
+    "PatchHunk",
+    "PatchResult",
+    "SandboxExecutionResult",
+    "CodeAgentError",
+    "AgenticCodeError",
+    "PatchSyntaxError",
+    "PatchApplicationError",
+    "PatchMatchError",
+    "SyntaxValidationError",
+    "RollbackError",
+    "SecurityBoundaryError",
 ]
