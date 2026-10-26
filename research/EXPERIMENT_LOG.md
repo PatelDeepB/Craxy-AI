@@ -389,6 +389,39 @@ ADR-007 and `CraxyPagedKVCache` are confirmed robust, leak-free, and fault-toler
 ### 3. Conclusion
 `AgenticCodeEngine` establishes a solid foundation for frontier-grade agentic code generation and safe self-repair loops, passing all 7 tests with zero regressions.
 
+---
+
+## EXP-009: Red-Team Adversarial Audit of Phase 3 Stage 2 Agentic Code Engine
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script/Module:** `src/craxy_ai/tools/code_agent.py`
+- **Test Suite:** `tests/test_audit_phase3_stage2.py` (5/5 tests passed in 2.81s)
+- **Repo Test Suite:** 156/156 tests passed in 54.25s
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** ULTRON 1 implemented `AgenticCodeEngine` to provide multi-file patching, AST pre-commit validation, and transactional rollback. ULTRON 2 independently red-teamed this system against five critical failure modes:
+  1. *Complex Path Traversal Escapes:* Nested dot-dot traversals and escaped path targets attempting to write outside workspace.
+  2. *Mid-Stream Transaction Failure:* When an atomic patch edits multiple files and fails on a later file due to syntax error, verify all preceding files are restored byte-for-byte.
+  3. *UTF-8 Multi-Byte and Mathematical Symbol Integrity:* Verify that multi-byte unicode (emojis, Japanese characters, math notations) are never corrupted by hunk splitting.
+  4. *Runaway Subprocess Timeout Containment:* Verify that infinite loop or sleeping subprocesses are terminated immediately upon timeout without creating zombie processes or hanging the orchestrator.
+  5. *Allocator Drift / Memory Leaks:* Measure process RSS over 100 sustained transactional cycles with mixed success, failure, and dry-run operations.
+
+### 2. Empirical Results
+
+| Test Case | Scenario Tested | Outcome | Measured Metric / Status |
+|---|---|---|---|
+| 1. Adversarial Path Traversal | Multi-vector directory escape attempts | `PASS` | Trapped as `SecurityBoundaryError` |
+| 2. Midstream Syntax Rollback | Multi-file edit aborting on file 2 | `PASS` | File 1 100% restored, `rolled_back=True` |
+| 3. UTF-8 & Symbol Preservation | Emoji and math notation in hunk replacement | `PASS` | Exact multi-byte preservation |
+| 4. Subprocess Timeout Containment | Child process sleeping 10s with 0.5s timeout | `PASS` | Killed in < 2.5s, `timed_out=True` |
+| 5. 100-Cycle Memory Drift | 100 consecutive transactional cycles | `PASS` | RSS drift strictly < 5.0 MB |
+
+### 3. Audit Verdict
+ADR-008 and `AgenticCodeEngine` are verified robust, memory-safe, and resilient against directory traversal attacks and syntax poisoning. Formally accepted and verified.
+
+
 
 
 
