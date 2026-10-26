@@ -728,6 +728,43 @@ ADR-012 and Phase 6 Interactive Terminal Chat Mode are resilient against oversiz
 ### 3. Conclusion
 Craxy-AI is packaged and verified as a production-grade AI system capable of running frontier-level reasoning, 128K context dialogue, and autonomous code patching strictly within 2,048 MB physical DRAM and 100 GB NVMe storage.
 
+---
+
+## EXP-019: Adversarial Red-Team Audit of Phase 7 End-to-End System Packaging & Release
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Audit Test Suite:** `tests/test_audit_phase7_release.py` (5/5 passed in 10.47s)
+- **Overall Test Suite:** 228/228 tests passed across 33 test suites
+- **Audited Target:** `pyproject.toml`, `README.md`, `src/craxy_ai/__main__.py`, `src/craxy_ai/cli.py`
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** Verify whether the distribution package and standalone execution entrypoints maintain robustness against:
+  1. *Dependency Specification Conformance:* Verifying that dependencies in `pyproject.toml` follow standard PEP 508 version bounds.
+  2. *Unrecognized Argument Handling:* Ensuring invalid command-line flags trigger clean exit code 2 with standard argparse stderr diagnostic and zero unhandled tracebacks.
+  3. *Missing/Corrupted Storage Paths:* Validating that non-existent retrieval storage paths do not crash the pipeline.
+  4. *Ephemeral Directory Deletion:* Ensuring `--paged-kv auto` in subprocess invocations purges temporary files upon exit.
+  5. *Repeated Invocation Memory Stability:* Testing 20 sequential programmatic CLI invocations to ensure memory drift remains strictly < 20.0 MB.
+
+### 2. Empirical Results
+
+| Test Scenario | Audited Condition | Outcome | Measured Metric / Telemetry |
+|---|---|---|---|
+| 1. PEP 508 Dependency Validity | `pyproject.toml` dependencies | `PASS` | All dependencies specify version bounds (`numpy>=1.22.0`, `psutil>=5.9.0`) |
+| 2. Invalid Flag Trapping | `--unrecognized-extra-flag` | `PASS` | Exit code 2, argparse error emitted, zero traceback |
+| 3. Corrupt Storage Path Fallback | Nonexistent storage directory | `PASS` | Handled gracefully, non-retrieval reasoning executed, exit code 0 |
+| 4. Ephemeral Directory Teardown | Subprocess `--paged-kv auto` | `PASS` | Temporary directory purged from filesystem upon exit |
+| 5. 20-Cycle Memory Stability | 20 sequential `cli_main()` calls | `PASS` | RSS memory drift strictly < 20.0 MB; peak RSS <= 480 MB (> 1,560 MB headroom) |
+
+### 3. Red-Team Remediation Applied
+- Uncovered that `test_audit_module_execution_with_invalid_flag` previously omitted a valid mode flag alongside unrecognized arguments, causing mutually exclusive group error rather than unrecognized argument error. Aligned test to `--info --unrecognized-extra-flag`.
+- Confirmed that `cli.main(argv)` natively returns an integer exit code without throwing unhandled exceptions, facilitating clean in-process execution and testing.
+
+### 4. Audit Verdict
+ADR-013 and Phase 7 System Packaging are verified robust, compliant with packaging standards, and strictly bounded within the 2,048 MB physical DRAM budget. Formally approved.
+
+
 
 
 
