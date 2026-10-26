@@ -4,15 +4,15 @@
 
 ## Current state
 
-- **STATE:** `READY_FOR_ULTRON_2`
-- **TURN:** `50`
-- **CURRENT OWNER:** `NONE`
+- **STATE:** `ULTRON_2_ACTIVE`
+- **TURN:** `51`
+- **CURRENT OWNER:** `ULTRON 2`
 - **LAST COMPLETED AGENT:** `ULTRON 1`
-- **LAST COMPLETED COMMIT:** `70ebace`
-- **NEXT AGENT:** `ULTRON 2`
-- **LAST HANDOFF SUMMARY:** ULTRON 1 completed Turn 50 Phase 3 Stage 1: Implemented CraxyPagedKVCache (128K context in 117.4 MB RAM, 7.4 GB NVMe), ADR-007, EXP-006, 7/7 tests passed.
-- **NEXT TASK:** Turn 51 independent adversarial audit of CraxyPagedKVCache (tests/test_audit_phase3_stage1.py) and memory boundaries verification.
-- **UPDATED AT (UTC):** `2026-10-26T05:08:00Z`
+- **LAST COMPLETED COMMIT:** `9f10c2b`
+- **NEXT AGENT:** `ULTRON 1`
+- **LAST HANDOFF SUMMARY:** ULTRON 2 claimed Turn 51 for independent adversarial audit of CraxyPagedKVCache.
+- **NEXT TASK:** Execute tests/test_audit_phase3_stage1.py, verify corruption containment, audit ADR-007, and transition to READY_FOR_ULTRON_1.
+- **UPDATED AT (UTC):** `2026-10-26T05:25:00Z`
 
 ## Allowed state transitions
 
