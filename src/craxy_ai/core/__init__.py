@@ -5,6 +5,7 @@ In-RAM neural reasoning core and chunked prefill engine for Craxy-AI.
 from src.craxy_ai.core.model import CraxyNeuralCore, KVCacheBuffer
 from src.craxy_ai.core.prefill import ChunkedPrefillEngine, PrefillResult
 from src.craxy_ai.core.early_exit import EarlyExitClassifier, EarlyExitDecision
+from src.craxy_ai.core.paged_kv import CraxyPagedKVCache, PagedKVConfig
 
 __all__ = [
     "CraxyNeuralCore",
@@ -13,5 +14,7 @@ __all__ = [
     "PrefillResult",
     "EarlyExitClassifier",
     "EarlyExitDecision",
+    "CraxyPagedKVCache",
+    "PagedKVConfig",
 ]
 

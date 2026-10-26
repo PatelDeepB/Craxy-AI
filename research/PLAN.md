@@ -134,6 +134,22 @@ We identify five core technical pathways that leverage 100 GB storage while resp
 
 ---
 
+## 4.1 Phase 3: Frontier Parity Engineering Roadmap (Turns 50+)
+
+To close the capability gap with frontier models under the hard 2 GB RAM and 100 GB NVMe constraints, Phase 3 establishes three concrete technical milestones:
+
+### Stage 1: NVMe-Paged 128K KV Cache Engine (Turn 50 - COMPLETED)
+- **Status:** COMPLETED (`src/craxy_ai/core/paged_kv.py`, commit `ultron-1`).
+- **Outcome:** Implemented `CraxyPagedKVCache` supporting 131,072 context tokens. Pinned attention sinks (tokens 0..63) and recent sliding window (up to 2,048 tokens) in RAM (<= 120 MB RAM footprint), paging historical blocks (64 tokens/block) to sector-aligned binary storage on NVMe (7.0 GB footprint, < 10% of 100 GB budget). Passes 7/7 unit tests verifying sub-millisecond block retrieval and attention sink preservation.
+
+### Stage 2: Autonomous Agentic Code Patching & Multi-File Execution Sandbox (Turn 51)
+- **Objective:** Bridge the agentic coding gap identified in human review by implementing AST-level multi-file patch generation, syntax-aware refactoring tools, and isolated safe evaluation.
+
+### Stage 3: Real Weights Inference Engine via GGUF/llama.cpp (Turn 52+)
+- **Objective:** Move beyond synthetic parametric proxies by integrating real quantized weights (e.g., Qwen2.5-Coder-1.5B or SmolLM2 in GGUF Q4_K_M / IQ2_XXS) operating within the 1,500 MB in-RAM budget, orchestrated with the DiskANN knowledge store and Paged 128K KV cache.
+
+---
+
 ## 5. Go / No-Go Decision Criteria
 
 1. **Gate 0 (Memory Feasibility):** If runtime RSS + KV cache (2,048 tokens) exceeds 1,500 MB before any weights are loaded, standard PyTorch is deemed unviable and we must pivot to custom C++ / llama.cpp / lightweight ONNX runtime.

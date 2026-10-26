@@ -18,6 +18,7 @@ class CraxySystemLimits:
     max_storage_bytes: int = 100 * 10**9  # 100 GB
     max_prefill_chunk_tokens: int = 512
     max_context_window_tokens: int = 2048
+    max_paged_context_window_tokens: int = 131072  # 128K tokens context
     min_retrieval_similarity_threshold: float = 0.65
     max_math_exponent_bound: int = 10000
     target_tokens_per_second: float = 2.0
