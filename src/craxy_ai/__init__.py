@@ -15,6 +15,7 @@ from src.craxy_ai.core.model import CraxyNeuralCore
 from src.craxy_ai.tools.math_evaluator import SafeMathEvaluator
 from src.craxy_ai.tools.logic_evaluator import SafeLogicEvaluator
 from src.craxy_ai.core.early_exit import EarlyExitClassifier
+from src.craxy_ai.core.paged_kv import CraxyPagedKVCache, PagedKVConfig
 from src.craxy_ai.memory.graph_index import VamanaGraphStore
 
 __all__ = [
@@ -22,6 +23,8 @@ __all__ = [
     "PipelineState",
     "PipelineOutput",
     "CraxyNeuralCore",
+    "CraxyPagedKVCache",
+    "PagedKVConfig",
     "SafeMathEvaluator",
     "SafeLogicEvaluator",
     "EarlyExitClassifier",

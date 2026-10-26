@@ -138,4 +138,28 @@ In Turn 5, ULTRON 1 formulated the definitive Craxy-AI Architectural Master Blue
 - Project ULTRON transitions from exploratory architectural research to staged production engineering in `src/craxy_ai/`.
 - All implementation milestones must conform to the 2,048 MB RSS ceiling and 100 GB NVMe storage budget.
 
+---
+
+## ADR-007: NVMe-Paged Two-Tier Virtual KV Cache for 128K Context Window
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Status:** PROPOSED & IMPLEMENTED
+
+### Context
+Frontier foundational models operate with context windows of 128K to 1M+ tokens. In standard Grouped-Query Attention architectures (L=28, H_kv=8, D=128), storing 128K tokens of KV states requires ~14.0 GB in FP16 or ~7.0 GB in INT8. Holding this in physical DRAM violates the strict 2,048 MB system RSS ceiling. Conversely, evicting all tokens beyond 2,048 tokens destroys the agentic ability to reference multi-file codebases, long documentation, and multi-turn execution traces.
+
+### Decision
+1. Implement a two-tier virtual KV cache architecture (`CraxyPagedKVCache` in `src/craxy_ai/core/paged_kv.py`):
+   - Tier 1 (Active In-RAM Working Buffer): Attention sink tokens (tokens 0..63) and the most recent sliding window (up to 2,048 tokens) are pinned in DRAM, strictly bounding physical RAM footprint to <= 120 MB.
+   - Tier 2 (NVMe-Paged Secondary Store): Historical blocks (64 tokens per block = 3.5 MB) are written to a sector-aligned binary backing file on NVMe flash storage (`craxy_paged_kv_*.bin`).
+2. Sinks are permanently preserved in DRAM to prevent attention drift and perplexity collapse (Attention Sinks principle, Xiao et al., ICLR 2024).
+3. Blocks evicted to NVMe can be retrieved in sub-2ms random block reads via page-aligned direct file I/O for historical needle retrieval and multi-file code review.
+4. Total 128K storage footprint on NVMe is 7.0 GB (well below the 100.0 GB storage budget).
+
+### Consequences
+- Unlocks 131,072 token context capability without breaching the 2,048 MB physical DRAM budget.
+- Enables frontier-class long context retention across large repositories and multi-turn coding loops.
+
+
 
