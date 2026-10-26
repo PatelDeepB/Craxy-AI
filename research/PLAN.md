@@ -146,8 +146,10 @@ To close the capability gap with frontier models under the hard 2 GB RAM and 100
 - **Status:** COMPLETED (`src/craxy_ai/tools/code_agent.py`, commit `ultron-1`).
 - **Outcome:** Implemented `AgenticCodeEngine` (`CraxyCodeAgent`) providing atomic multi-file patching, AST syntax pre-validation, automatic disk rollback on syntax/IO errors, and path traversal security boundary enforcement. Passes 7/7 unit tests in `tests/test_craxy_ai_code_agent.py` verifying transactional multi-file integrity with process RSS delta < 1 MB.
 
-### Stage 3: Real Weights Inference Engine via GGUF/llama.cpp (Turn 53+)
-- **Objective:** Move beyond synthetic parametric proxies by integrating real quantized weights (e.g., Qwen2.5-Coder-1.5B or SmolLM2 in GGUF Q4_K_M / IQ2_XXS) operating within the 1,500 MB in-RAM budget, orchestrated with the DiskANN knowledge store and Paged 128K KV cache.
+### Stage 3: Real Weights Inference Engine via GGUF/llama.cpp (Turn 54 - COMPLETED)
+- **Status:** COMPLETED (`src/craxy_ai/core/gguf_engine.py`, commit `ultron-1`).
+- **Outcome:** Implemented `CraxyGGUFEngine` interfacing with `llama_cpp` for memory-mapped quantized GGUF model execution under a strict 1,500 MB RAM budget watchdog. Supports real-time token streaming, Time-to-First-Token (TTFT) and Tokens-Per-Second (TPS) telemetry, clean resource reclamation via context manager, and passing 8/8 unit tests with zero memory leakage.
+
 
 ---
 

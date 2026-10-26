@@ -17,6 +17,7 @@ from src.craxy_ai.tools.logic_evaluator import SafeLogicEvaluator
 from src.craxy_ai.tools.code_agent import AgenticCodeEngine, CraxyCodeAgent
 from src.craxy_ai.core.early_exit import EarlyExitClassifier
 from src.craxy_ai.core.paged_kv import CraxyPagedKVCache, PagedKVConfig
+from src.craxy_ai.core.gguf_engine import CraxyGGUFEngine, GGUFEngineConfig
 from src.craxy_ai.memory.graph_index import VamanaGraphStore
 
 __all__ = [
@@ -26,6 +27,8 @@ __all__ = [
     "CraxyNeuralCore",
     "CraxyPagedKVCache",
     "PagedKVConfig",
+    "CraxyGGUFEngine",
+    "GGUFEngineConfig",
     "SafeMathEvaluator",
     "SafeLogicEvaluator",
     "AgenticCodeEngine",
@@ -37,3 +40,4 @@ __all__ = [
     "cli_main",
     "__version__",
 ]
+
