@@ -230,8 +230,6 @@ Previous iterations established non-parametric DiskANN retrieval, AST algorithmi
 - Unlocks real generative intelligence for code synthesis, reasoning, and multi-turn interaction.
 - Formally approved and signed off by ULTRON 2.
 
-
-
 ---
 
 ## ADR-010: Phase 4 Unified Frontier Tri-Tier Pipeline Architecture
@@ -271,3 +269,30 @@ To achieve frontier-grade execution, these individual subsystems must be unified
 - Hardened with `try ... finally` pipeline state restoration ensuring IDLE reset on execution errors.
 - Verified under 100-cycle continuous mixed stress with zero memory leaks and peak RSS <= 450 MB (giving > 1,590 MB headroom under the 2,048 MB ceiling).
 - Formally approved and signed off by ULTRON 2.
+
+---
+
+## ADR-011: Phase 5 Production CLI Exposure & Frontier Capability Dispatch
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Status:** PROPOSED (Awaiting ULTRON 2 Adversarial Audit)
+
+### Context
+With Phase 4 unifying parametric reasoning, paged KV caching, agentic code patching, and AST sandboxes, users and external harnesses require an ergonomic, production-grade CLI (`craxy-ai`) providing complete access to all capabilities under strict physical resource limits (<= 2,048 MB DRAM).
+
+### Decision
+1. **Multi-Mode CLI Architecture (`src/craxy_ai/cli.py`):**
+   - Mutually exclusive modes: `--info`, `--query <text>`, `--benchmark`, and `--code-patch <code>`.
+2. **Dynamic Frontier Flag Support:**
+   - `--use-gguf` / `--gguf [path]`: routes query generation through `CraxyGGUFEngine` with 1,500 MB RAM watchdog.
+   - `--paged-kv [dir]`: attaches `CraxyPagedKVCache` to stream 128K context blocks to NVMe storage.
+   - `--code-patch <code>`: executes AST syntax verification and workspace resolution via `CraxyCodeAgent`.
+3. **Automated Resource Reclamation:**
+   - Wraps temporary NVMe cache directories and engine lifecycles in `try ... finally` blocks to ensure clean teardown without filesystem locks or dangling handles.
+4. **Modularity Adherence:**
+   - Subdivides CLI argument registration and pipeline initialization into functions <= 35 lines, maintaining `cli.py` <= 290 lines.
+
+### Consequences
+- Unlocks production CLI access to real quantized GGUF models, 128K context windows, and code self-repair.
+- Preserves full backwards compatibility with Phase 2 test suites.
