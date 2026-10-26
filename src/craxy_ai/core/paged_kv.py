@@ -18,39 +18,12 @@ import numpy as np
 import torch
 
 from src.craxy_ai.config import DEFAULT_MODEL_CONFIG, ModelArchitectureConfig
-
-
-class PagedKVCacheError(Exception):
-    """Base exception for errors in CraxyPagedKVCache operations."""
-    pass
-
-
-class BlockOutOfBoundsError(PagedKVCacheError):
-    """Raised when an operation requests a block index beyond allocated capacity."""
-    pass
-
-
-class CacheStorageIOError(PagedKVCacheError):
-    """Raised when disk backing read or write fails."""
-    pass
-
-
-@dataclass(frozen=True)
-class PagedKVConfig:
-    """Configuration parameters for two-tier paged KV cache."""
-    max_tokens: int = 131072
-    block_size_tokens: int = 64
-    ram_window_tokens: int = 2048
-    sink_tokens: int = 64
-    bytes_per_element: int = 1  # INT8 quantization
-
-    def __post_init__(self) -> None:
-        if self.ram_window_tokens <= self.sink_tokens:
-            raise ValueError("ram_window_tokens must be greater than sink_tokens.")
-        if self.ram_window_tokens % self.block_size_tokens != 0:
-            raise ValueError("ram_window_tokens must be a multiple of block_size_tokens.")
-        if self.max_tokens % self.block_size_tokens != 0:
-            raise ValueError("max_tokens must be a multiple of block_size_tokens.")
+from src.craxy_ai.core.paged_kv_types import (
+    BlockOutOfBoundsError,
+    CacheStorageIOError,
+    PagedKVCacheError,
+    PagedKVConfig,
+)
 
 
 class CraxyPagedKVCache:
@@ -62,12 +35,16 @@ class CraxyPagedKVCache:
 
     def __init__(
         self,
-        arch_config: ModelArchitectureConfig = DEFAULT_MODEL_CONFIG,
+        arch_config: Any = DEFAULT_MODEL_CONFIG,
         paged_config: Optional[PagedKVConfig] = None,
         backing_dir: Optional[str] = None
     ) -> None:
-        self.arch = arch_config
-        self.cfg = paged_config or PagedKVConfig()
+        if isinstance(arch_config, PagedKVConfig):
+            self.cfg = arch_config
+            self.arch = DEFAULT_MODEL_CONFIG
+        else:
+            self.arch = arch_config
+            self.cfg = paged_config or PagedKVConfig()
         
         # Dimensions per block
         # Shape per block: (num_layers, 2 [K/V], block_size, num_kv_heads, head_dim)
@@ -115,6 +92,11 @@ class CraxyPagedKVCache:
         return self._current_tokens
 
     @property
+    def active_token_count(self) -> int:
+        """Alias property for current_seq_len."""
+        return self._current_tokens
+
+    @property
     def ram_footprint_mb(self) -> float:
         """Return physical RAM consumed by the active working buffer in MB."""
         return self._ram_buffer.nelement() / (1024 * 1024)
@@ -151,6 +133,47 @@ class CraxyPagedKVCache:
         self._ram_slot_to_block[slot] = block_idx
         self._current_tokens += self.cfg.block_size_tokens
         return self._current_tokens
+
+    def append_block(
+        self,
+        block_keys: Any = None,
+        block_values: Any = None
+    ) -> int:
+        """
+        Convenience wrapper to append a block of KV states, accepting numpy or torch arrays.
+        Expands 3D (tokens, heads, dim) to 4D (layers, tokens, heads, dim) if necessary.
+        """
+        if block_keys is None:
+            block_keys = torch.zeros(
+                (self.arch.num_layers, self.cfg.block_size_tokens, self.arch.num_kv_heads, self.arch.head_dim),
+                dtype=torch.int8
+            )
+        elif isinstance(block_keys, np.ndarray):
+            block_keys = torch.from_numpy(block_keys)
+
+        if block_values is None:
+            block_values = torch.zeros(
+                (self.arch.num_layers, self.cfg.block_size_tokens, self.arch.num_kv_heads, self.arch.head_dim),
+                dtype=torch.int8
+            )
+        elif isinstance(block_values, np.ndarray):
+            block_values = torch.from_numpy(block_values)
+
+        if block_keys.dim() == 3:
+            block_keys = block_keys.unsqueeze(0).expand(
+                self.arch.num_layers, -1, -1, -1
+            ).clone()
+        if block_values.dim() == 3:
+            block_values = block_values.unsqueeze(0).expand(
+                self.arch.num_layers, -1, -1, -1
+            ).clone()
+
+        if block_keys.dtype != torch.int8:
+            block_keys = block_keys.to(torch.int8)
+        if block_values.dtype != torch.int8:
+            block_values = block_values.to(torch.int8)
+
+        return self.append_token_block(block_keys, block_values)
 
     def _allocate_ram_slot(self, target_block_idx: int) -> int:
         """Find free RAM slot or evict the oldest non-sink block to NVMe."""
@@ -272,3 +295,13 @@ class CraxyPagedKVCache:
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()
+
+
+__all__ = [
+    "CraxyPagedKVCache",
+    "PagedKVConfig",
+    "PagedKVCacheError",
+    "BlockOutOfBoundsError",
+    "CacheStorageIOError",
+]
+
