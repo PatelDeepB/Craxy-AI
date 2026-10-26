@@ -230,3 +230,42 @@ Previous iterations established non-parametric DiskANN retrieval, AST algorithmi
 - Unlocks real generative intelligence for code synthesis, reasoning, and multi-turn interaction.
 - Formally approved and signed off by ULTRON 2.
 
+
+
+---
+
+## ADR-010: Phase 4 Unified Frontier Tri-Tier Pipeline Architecture
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Status:** PROPOSED (Awaiting ULTRON 2 Adversarial Audit)
+
+### Context
+Project ULTRON previously implemented discrete foundational subsystems:
+1. 128K context NVMe-paged KV caching (ADR-007, EXP-006).
+2. Autonomous agentic code editing and multi-file transactional sandbox (ADR-008, EXP-008).
+3. Real quantized GGUF weights inference engine on CPU (ADR-009, EXP-010).
+4. Memory-mapped non-parametric vector retrieval (ADR-005, EXP-004).
+5. AST mathematical and algorithmic logic sandboxes (ADR-004, EXP-003).
+
+To achieve frontier-grade execution, these individual subsystems must be unified into a single coherent orchestration pipeline (`CraxyPipeline`) that transitions cleanly through lifecycle states (`IDLE -> PREFILL -> GENERATE -> TOOL_DISPATCH -> FINALIZE`) while strictly guaranteeing that physical DRAM RSS remains bounded below 2,048 MB under continuous execution.
+
+### Decision
+1. **Decoupled Architectural Typing (`src/craxy_ai/pipeline_types.py`):**
+   - Extract `PipelineState` and `PipelineOutput` into dedicated module to ensure `pipeline.py` strictly complies with the repository limit of <= 300 lines per file.
+2. **Unified Generation Tier Routing:**
+   - When `use_gguf=True` and a `CraxyGGUFEngine` instance is attached, generation routes directly to quantized model weights with memory watchdog protection.
+   - Otherwise, generation proceeds through `CraxyNeuralCore` with Grouped-Query Attention (GQA) and autonomous syntax-tag parsing.
+3. **NVMe-Paged Context Caching Integration:**
+   - Ingests multi-turn dialogue history and retrieved document chunks via `ChunkedPrefillEngine`.
+   - Attaches `CraxyPagedKVCache` to stream historical KV blocks to NVMe sector-aligned binary files, retaining attention sinks in RAM and eliminating linear KV growth.
+4. **Multi-Tool Autonomous Dispatching:**
+   - Dispatches mathematical expressions to `SafeMathEvaluator` (`calc`).
+   - Dispatches algorithmic logic and syntax verification to `SafeLogicEvaluator` (`logic`) and `CraxyCodeAgent` (`code`).
+5. **Physical Memory Watchdog:**
+   - Continuously monitors resident set size (RSS) via `psutil`, ensuring process memory remains <= 2,048 MB across long-running queries with drift < 30 MB.
+
+### Consequences
+- Provides a unified API (`run_query` / `process_query`) supporting frontier-grade capabilities.
+- Maintains backwards compatibility with all existing pipeline test suites.
+- Sets the foundation for the Phase 4 independent adversarial audit by ULTRON 2.

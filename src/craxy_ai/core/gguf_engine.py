@@ -206,3 +206,16 @@ class CraxyGGUFEngine:
             self._model = None
         self._is_loaded = False
         gc.collect()
+
+    def close(self) -> None:
+        """Release allocated engine resources and unload model."""
+        self.unload_model()
+
+    def __enter__(self) -> "CraxyGGUFEngine":
+        """Enter context manager."""
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exit context manager and release allocated handles."""
+        self.close()
+
