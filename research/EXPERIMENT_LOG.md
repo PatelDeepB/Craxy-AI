@@ -325,6 +325,38 @@ Architecture: L=28 layers, H_kv=8 heads, D=128 head dim, INT8 quantization (57,3
 ### 3. Conclusion
 CraxyPagedKVCache successfully overcomes the 128K context memory wall, consuming only 117.4 MB of physical DRAM while storing up to 128K tokens in 7.4 GB of NVMe flash storage (well inside the 100 GB budget).
 
+---
+
+## EXP-007: Red-Team Adversarial Audit of 128K NVMe-Paged KV Cache
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script/Module:** `tests/test_audit_phase3_stage1.py`
+- **Test Suite:** `tests/test_audit_phase3_stage1.py` (5/5 tests passed; combined paged KV tests: 12/12 passed)
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** ULTRON 1 implemented `CraxyPagedKVCache` in Turn 50 claiming 128K context under 120 MB RAM. ULTRON 2 independently challenged:
+  1. Does high-frequency block thrashing (100+ blocks across a 4-block RAM window) cause slot leaks or eviction stalls?
+  2. Are Attention Sinks (Block 0) strictly permanent under extreme sequence churn?
+  3. Does unexpected backing file truncation crash with unhandled exceptions, or is it trapped cleanly?
+  4. Does repeated write/read cycling cause memory allocator drift?
+  5. Are concurrent instances isolated without file path collisions?
+
+### 2. Empirical Results
+
+| Test Case | Scenario Tested | Outcome | Measured Metric / Status |
+|---|---|---|---|
+| 1. High-Frequency Thrashing | 100 blocks written and verified through 4 RAM slots | `PASS` | 96 blocks paged to NVMe, 4 resident in RAM, bit-identical readback |
+| 2. Attention Sink Pinning | 40-block continuous allocation | `PASS` | Block 0 never flagged on disk; 100% in RAM |
+| 3. Truncated File Corruption | File truncated to 10 bytes during read | `PASS` | Cleanly trapped as `CacheStorageIOError` |
+| 4. Instance Isolation | Concurrent `cache_a` and `cache_b` instances | `PASS` | Unique backing paths, zero cross-talk |
+| 5. Sustained Memory Drift | 40-cycle block write/read churn | `PASS` | Process RSS drift < 10 MB (measured negligible) |
+
+### 3. Audit Verdict
+ADR-007 and `CraxyPagedKVCache` are confirmed robust, leak-free, and fault-tolerant. Formally accepted and verified.
+
+
 
 
 
