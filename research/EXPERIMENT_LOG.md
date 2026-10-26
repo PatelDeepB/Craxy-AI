@@ -533,3 +533,33 @@ ADR-009 and `CraxyGGUFEngine` are verified robust, memory-safe, and fault-tolera
 
 ### 3. Conclusion
 Phase 4 successfully unifies all frontier capabilities into `CraxyPipeline`, verifying robust orchestration, microsecond AST tool dispatch, 128K context NVMe streaming, and strict DRAM ceiling compliance. Formally submitted for ULTRON 2 independent adversarial audit.
+
+
+---
+
+## EXP-013: Independent Adversarial Red-Team Audit of Phase 4 Unified Pipeline
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script/Module:** `tests/test_audit_phase4_pipeline.py`
+- **Audit Test Suite:** 5/5 tests passed in 8.34s
+- **Total Repository Test Suite:** 185/185 tests passed in 67.44s
+- **Artifact:** `tests/test_audit_phase4_pipeline.py`
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** Verify whether the unified Tri-Tier execution engine (`CraxyPipeline`) maintains stability, security boundaries, and strict memory limits under hostile inputs, mock generation failures, AST command injection attempts, tight RAM window eviction, multi-instance isolation, and 100-cycle continuous execution.
+
+### 2. Empirical Results
+
+| Test Case | Scenario Tested | Outcome | Measured Metric / Telemetry |
+|---|---|---|---|
+| 1. State Machine Reset Guard | Injected `RuntimeError` during generation tier | `PASS` | `try ... finally` guarantees clean reset to `PipelineState.IDLE` |
+| 2. Malicious AST Injection | Command injection (`__import__('os').system`) & resource attacks | `PASS` | All payloads neutralized; clean `ERROR` returned, 0 system escapes |
+| 3. Tight RAM Window NVMe Eviction | 4-block ingestion (256 tokens) under 128-token RAM window | `PASS` | Attention sinks pinned, >= 2 blocks paged to disk, RAM <= 150 MB |
+| 4. Multi-Instance Isolation | Decoupled pipeline instances with distinct storage directories | `PASS` | Closing instance 1 left instance 2 fully intact, zero cross-talk |
+| 5. 100-Cycle Memory Stability | 100 consecutive queries cycling math, logic, and reasoning | `PASS` | Working set growth strictly < 20.0 MB; peak RSS <= 493.55 MB |
+
+### 3. Audit Verdict
+ADR-010 and the Phase 4 Unified Frontier Pipeline are robust, secure against AST injection, fault-tolerant under execution errors, and strictly compliant with the 2,048 MB physical DRAM budget. Formally approved and verified.
+

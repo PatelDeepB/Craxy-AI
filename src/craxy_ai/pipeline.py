@@ -235,25 +235,26 @@ class CraxyPipeline:
         """Execute full end-to-end tri-tier query processing cycle."""
         target_prompt = user_prompt if user_prompt is not None else (query or "")
         t_start = time.perf_counter()
-        self.state = PipelineState.PREFILL
+        try:
+            self.state = PipelineState.PREFILL
+            retrieved_texts = self._execute_retrieval(query_vector=query_vector)
+            _, prompt_tokens = self._assemble_context(target_prompt, retrieved_texts)
+            self.prefill_engine.ingest_context(total_seq_len=prompt_tokens)
 
-        retrieved_texts = self._execute_retrieval(query_vector=query_vector)
-        _, prompt_tokens = self._assemble_context(target_prompt, retrieved_texts)
-        self.prefill_engine.ingest_context(total_seq_len=prompt_tokens)
+            sim_text, tokens_emitted, executed_tools, engine_type = self._run_generation_tier(
+                target_prompt, retrieved_texts, max_new_tokens, use_gguf
+            )
 
-        sim_text, tokens_emitted, executed_tools, engine_type = self._run_generation_tier(
-            target_prompt, retrieved_texts, max_new_tokens, use_gguf
-        )
+            self.state = PipelineState.FINALIZE
+            self.conversation_history.append((target_prompt, sim_text))
+            total_lat_ms = (time.perf_counter() - t_start) * 1000.0
 
-        self.state = PipelineState.FINALIZE
-        self.conversation_history.append((target_prompt, sim_text))
-        total_lat_ms = (time.perf_counter() - t_start) * 1000.0
-        self.state = PipelineState.IDLE
-
-        return self._build_output(
-            sim_text, len(retrieved_texts) > 0, len(retrieved_texts),
-            executed_tools, tokens_emitted, total_lat_ms, prompt_tokens, engine_type,
-        )
+            return self._build_output(
+                sim_text, len(retrieved_texts) > 0, len(retrieved_texts),
+                executed_tools, tokens_emitted, total_lat_ms, prompt_tokens, engine_type,
+            )
+        finally:
+            self.state = PipelineState.IDLE
 
     def process_query(self, query: str, **kwargs: Any) -> PipelineOutput:
         """Compatibility alias for run_query."""
