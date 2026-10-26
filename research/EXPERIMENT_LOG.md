@@ -466,3 +466,36 @@ ADR-008 and `AgenticCodeEngine` are verified robust, memory-safe, and resilient 
 
 ### 3. Conclusion
 `CraxyGGUFEngine` establishes the runtime foundation for executing real quantized neural models directly within the 2 GB physical RAM ceiling, passing all 8 unit tests in 2.26s with zero regressions.
+
+---
+
+## EXP-011: Red-Team Adversarial Audit of Phase 3 Stage 3 CraxyGGUFEngine
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Script/Module:** `src/craxy_ai/core/gguf_engine.py`
+- **Test Suite:** `tests/test_audit_phase3_stage3.py` (5/5 tests passed in 2.72s)
+- **Repo Test Suite:** 169/169 tests passed
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** ULTRON 1 implemented `CraxyGGUFEngine` to execute real quantized GGUF weights with `llama_cpp`. ULTRON 2 subjected this runtime to 5 adversarial failure modes:
+  1. *Corrupted Binary Headers:* Validating that non-GGUF or truncated binary payloads cleanly raise `InferenceExecutionError` without crashing the Python runtime or C++ bindings.
+  2. *Context Ceiling Overflow:* Ensuring token estimations exceeding the configured context window ceiling are caught prior to execution (`ContextWindowOverflowError`).
+  3. *Zero-Token Generation Edge Case:* Ensuring requesting zero tokens is handled gracefully without triggering division-by-zero during tokens/sec calculation.
+  4. *Multi-Instance Isolation:* Verifying independent engine instances maintain decoupled configuration, memory state, and unloading lifecycles without cross-instance leakage.
+  5. *100-Cycle Memory Leak Audit:* Measuring process RSS drift over 100 sustained generation passes to confirm strict bounds (< 5.0 MB drift).
+
+### 2. Empirical Results
+
+| Test Case | Scenario Tested | Outcome | Measured Metric / Status |
+|---|---|---|---|
+| 1. Corrupt Binary Header | Non-GGUF truncated binary payload | `PASS` | Cleanly trapped as `InferenceExecutionError` |
+| 2. Context Window Overflow | 50-word prompt against 32-token ceiling | `PASS` | Cleanly trapped as `ContextWindowOverflowError` |
+| 3. Zero Max Tokens Guard | Requesting `max_tokens=0` | `PASS` | Handled gracefully, TPS >= 0.0, no crash |
+| 4. Multi-Instance Isolation | Decoupled engines with differing budgets | `PASS` | Independent lifecycles, zero cross-talk |
+| 5. 100-Cycle Memory Drift | 100 consecutive generation passes | `PASS` | Process RSS drift strictly < 5.0 MB |
+
+### 3. Audit Verdict
+ADR-009 and `CraxyGGUFEngine` are verified robust, memory-safe, and fault-tolerant under adversarial stress. Formally accepted and verified.
+
