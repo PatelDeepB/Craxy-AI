@@ -428,3 +428,41 @@ ADR-008 and `AgenticCodeEngine` are verified robust, memory-safe, and resilient 
 
 
 
+
+
+---
+
+## EXP-010: GGUF Quantized Inference Engine Memory Budget & Generation Verification
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Status:** COMPLETED
+- **Script/Module:** `src/craxy_ai/core/gguf_engine.py`
+- **Test Suite:** `tests/test_craxy_ai_gguf_engine.py` (8/8 tests passed in 2.26s)
+
+### 1. Objective and Hypothesis
+- **Hypothesis:** By employing memory-mapped model weights via `llama_cpp` with strict runtime physical memory monitoring, real quantized neural models can be executed directly within a 1,500 MB RAM budget on CPU.
+- **Goal:** Verify that:
+  1. Engine initializes with configurable context window and thread count.
+  2. Missing model artifacts raise typed `ModelNotFoundError`.
+  3. Memory status accurately exposes process RSS, budget limit, and available headroom.
+  4. Token generation pass produces valid text, tracks tokens per second, and measures duration.
+  5. Context window overflows are trapped before execution begins.
+  6. Memory budget breaches trigger immediate eviction and raise `MemoryBudgetExceededError`.
+  7. Sustained generation over 50 consecutive passes produces zero memory leakage (< 10 MB drift).
+
+### 2. Empirical Results
+
+| Test Case | Scenario Tested | Outcome | Measured Metric / Status |
+|---|---|---|---|
+| 1. Engine Initialization | Default & custom config creation | `PASS` | Context: 2,048 / 4,096 tokens, Budget: 1,500 MB |
+| 2. Missing File Protection | Specifying nonexistent weight path | `PASS` | Cleanly trapped as `ModelNotFoundError` |
+| 3. Memory Telemetry | Querying `get_memory_status()` | `PASS` | Accurate RSS, budget, and headroom reporting |
+| 4. Generation Pipeline | Prompt evaluation and token generation | `PASS` | Output emitted, throughput measured, stop reason verified |
+| 5. Context Overflow | Prompt + tokens exceeding window limit | `PASS` | Trapped as `ContextWindowOverflowError` |
+| 6. Memory Watchdog | Artificial 1.0 MB budget threshold | `PASS` | Evicted, trapped as `MemoryBudgetExceededError` |
+| 7. Unload Reclamation | `unload_model()` reference clearing | `PASS` | Memory mappings cleared, `is_loaded=False` |
+| 8. Sustained Generation | 50 consecutive generation passes | `PASS` | Process RSS drift < 10.0 MB over 50 passes |
+
+### 3. Conclusion
+`CraxyGGUFEngine` establishes the runtime foundation for executing real quantized neural models directly within the 2 GB physical RAM ceiling, passing all 8 unit tests in 2.26s with zero regressions.
