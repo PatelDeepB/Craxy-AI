@@ -3603,3 +3603,73 @@ In Turn 58, ULTRON 1 completed Phase 5 Production CLI Exposure. We enhanced `src
   - Create and pass all tests in `tests/test_audit_phase5_cli.py`.
   - Verify all 197+ repository tests continue to pass with zero regressions.
   - Confirm process RSS strictly <= 2,048 MB under CLI stress.
+
+---
+
+## Turn 59: Adversarial Red-Team Audit of Phase 5 Production CLI Exposure & ADR-011 Sign-off
+
+- **Agent:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Turn Number:** 59
+- **Date/Time (UTC):** 2026-10-26T06:55:00Z
+- **Task:** Execute independent adversarial red-team audit of Phase 5 Production CLI Exposure in `src/craxy_ai/cli.py` and author comprehensive audit test suite `tests/test_audit_phase5_cli.py`. Probe edge cases, mutex enforcement, missing/corrupted storage and GGUF paths, AST code syntax attacks, temporary cache directory deletion, and multi-cycle memory stability. Formally evaluate and approve ADR-011.
+- **Commit Hash:** efd7aa7
+
+---
+
+### 1. Executive Result
+In Turn 59, ULTRON 2 conducted an independent adversarial audit of Phase 5 Production CLI Exposure. We authored `tests/test_audit_phase5_cli.py` (5/5 passed in 10.10s) testing mutual exclusion across CLI modes, malicious and malformed Python syntax rejection in `--code-patch`, non-existent storage/model paths, deterministic teardown of temporary paged KV directories, and 25-cycle memory stability. We uncovered that non-existent GGUF model paths previously triggered unhandled `ModelNotFoundError` tracebacks; we remediated this by enclosing `execute_query` in `try ... except Exception as err:` with structured diagnostic reporting and returning exit code 1. All 202 repository tests across 28 test suites passed with 100% success rate under 2,048 MB physical DRAM budget. ADR-011 is formally approved.
+
+---
+
+### 2. Files Changed and Purpose
+- `tests/test_audit_phase5_cli.py`: Authored 5 independent adversarial audit tests validating CLI argument mutex, AST syntax boundary conditions, missing path resilience, temporary directory purge, and multi-cycle memory stability.
+- `src/craxy_ai/cli.py`: Hardened `execute_query` with exception handling block returning exit code 1 and structured error output while preserving deterministic resource teardown in `finally:` block (298 lines <= 300).
+- `research/DECISIONS.md`: Formally approved ADR-011 (Phase 5 Production CLI Exposure & Frontier Capability Dispatch) with audit evidence.
+- `research/EXPERIMENT_LOG.md`: Documented EXP-015 empirical verification.
+- `research/ULTRON_RESEARCH_LOG.md`: Appended Turn 59 audit record.
+- `COMMUNICATION.md`: Logged Turn 59 completion and prepared handoff to ULTRON 1.
+- `WhoIsWorking.txt`: Maintained real-time status and continuous execution tracking.
+
+---
+
+### 3. Research Sources and Citations
+- **Python argparse Mutually Exclusive Groups:** Python Standard Library Documentation (`argparse.ArgumentParser.add_mutually_exclusive_group(required=True)`).
+- **Graceful Shell Exit Conventions:** POSIX Shell Command Language & GNU CLI Guidelines (Exit code 0 for success, exit code 1 for runtime errors, exit code 2 for CLI syntax errors).
+- **Deterministic Temporary Resource Management:** Python `tempfile` and `shutil` lifecycle management standards for ephemeral filesystems.
+
+---
+
+### 4. Hypothesis and Predicted Outcome
+- **Hypothesis:** By enforcing mutually exclusive mode groups, trapping runtime exceptions with structured stderr reporting, and executing temporary cache deletions in `finally:` blocks, Craxy-AI's CLI will be impervious to user flag conflicts, missing filesystem assets, and process memory leaks.
+- **Predicted Outcome:** All adversarial tests pass; memory growth stays < 25 MB across 25 consecutive queries; zero file handle leaks.
+
+---
+
+### 5. Methods, Commands, and Measured Results
+- **Command Executed:** `pytest tests/test_audit_phase5_cli.py -v` -> 5 passed in 10.10s.
+- **Command Executed:** `pytest -q` -> 202 passed across 28 suites with zero regressions.
+- **Mutual Exclusion Check:** 5 conflicting flag pairs cleanly rejected with exit code 2.
+- **Adversarial Code Inputs:** Syntax errors and indentation errors rejected with exit code 1; valid multiline code and UTF-8 strings validated with exit code 0.
+- **Temporary Cache Cleanup:** Verified directory created via `tempfile.mkdtemp` does not exist after `execute_query` returns.
+- **Process Peak RAM (RSS):** Bounded at <= 470 MB (headroom: > 1,570 MB under 2,048 MB limit).
+- **25-Cycle Memory Growth:** Strictly < 25.0 MB.
+
+---
+
+### 6. Flaws Found and Remediations
+- **Defect Uncovered:** Non-existent `--gguf-path` caused unhandled `ModelNotFoundError` traceback rather than clean CLI exit.
+- **Remediation:** Enclosed query execution in `try ... except Exception as err:` in `src/craxy_ai/cli.py`, outputting structured error box and returning shell exit code 1 while preserving resource reclamation in `finally:`.
+
+---
+
+### 7. Handoff to ULTRON 1
+- **Next Agent:** ULTRON 1 (Architect, Inventor, and Experimental Builder)
+- **Concrete Task for ULTRON 1 (Turn 60):**
+  1. Review ADR-011 approval and Turn 59 audit findings.
+  2. Implement Milestone 7 / Phase 6: Interactive Terminal Chat Mode (`--chat`) with multi-turn conversational memory, dynamic tool calling, and continuous 128K context KV cache paging.
+  3. Author test suite `tests/test_craxy_ai_chat.py`.
+- **Acceptance Criteria for ULTRON 1:**
+  - Create and pass interactive chat session tests with conversational turn retention.
+  - Keep resident memory <= 2,048 MB under 50 continuous conversational turns.
+  - Verify all repository tests continue to pass.
+

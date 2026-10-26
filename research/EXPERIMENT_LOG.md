@@ -593,3 +593,35 @@ ADR-010 and the Phase 4 Unified Frontier Pipeline are robust, secure against AST
 
 ### 3. Conclusion
 Phase 5 CLI implementation successfully productionizes Craxy-AI, enabling seamless invocation of real quantized neural inference, 128K context caching, and autonomous code self-repair directly from the shell under the strict 2,048 MB physical DRAM budget.
+
+---
+
+## EXP-015: Adversarial Red-Team Audit of Phase 5 Production CLI Exposure
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Audit Test Suite:** `tests/test_audit_phase5_cli.py` (5/5 passed in 10.10s)
+- **Overall Test Suite:** 202/202 tests passed across 28 test suites
+- **Audited Target:** `src/craxy_ai/cli.py`
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** Verify whether the production CLI (`craxy-ai`) maintains strict mutual exclusion across operation modes, gracefully traps and neutralizes malformed/unsafe AST inputs in `--code-patch`, safely handles missing/corrupted on-disk paths without process aborts, deterministically cleans up temporary NVMe cache directories without handle leaks, and maintains stable memory bounds across repeated shell invocations.
+
+### 2. Empirical Results
+
+| Test Scenario | Audited Condition | Outcome | Measured Metric / Telemetry |
+|---|---|---|---|
+| 1. Mutually Exclusive Flag Enforcement | 5 conflicting mode combinations (`--info + --query`, `--benchmark + --code-patch`, etc.) | `PASS` | `SystemExit(2)` cleanly raised by `argparse` parser |
+| 2. Adversarial Code Inputs | Malformed syntax missing paren, improper indentation, empty string, UTF-8 unicode | `PASS` | All bad syntax trapped returning exit code 1; valid multiline and UTF-8 cleanly return exit code 0 |
+| 3. Missing / Corrupted Paths | Non-existent `--storage-dir` and non-existent `--gguf-path` | `PASS` | Handled gracefully without crash; missing GGUF model returns exit code 1 with clean diagnostic error |
+| 4. Deterministic Temp Dir Teardown | `--query ... --paged-kv auto` temporary directory allocation | `PASS` | Temporary directory confirmed created and verified deleted immediately after execution via `finally` block |
+| 5. 25-Cycle Memory Stability | 25 consecutive queries and code-patch invocations in single process | `PASS` | Working set growth strictly < 25 MB; peak RSS <= 470 MB (headroom: > 1,570 MB under 2,048 MB limit) |
+
+### 3. Red-Team Remediation Applied
+- Uncovered that `execute_query` previously allowed exceptions (such as `ModelNotFoundError` from missing GGUF model paths) to bubble up as uncaught Python tracebacks.
+- Remediated in `src/craxy_ai/cli.py` by enclosing `pipeline.run_query` in `try ... except Exception as err:` with diagnostic formatting and returning exit code 1 while ensuring `finally:` block cleans up paged caches and temporary directories.
+
+### 4. Audit Verdict
+ADR-011 and Phase 5 Production CLI Exposure are resilient against invalid flags, malformed code, missing storage paths, and resource leaks. Bounded strictly within the 2,048 MB physical DRAM budget. Formally approved.
+
