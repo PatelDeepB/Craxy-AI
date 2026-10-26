@@ -1,23 +1,14 @@
-"""
-NVMe-Paged 128K Key-Value Cache Engine (CraxyPagedKV).
-
-Implements Phase 3 Stage 1 (ADR-007):
-- Breaks the 128K context memory wall within a 2,048 MB RAM ceiling.
-- Employs a two-tier architecture: In-RAM active window (sinks + sliding window)
-  and NVMe-backed page-aligned binary storage for historical context.
-- Maintains physical RAM footprint <= 150 MB while scaling context to 131,072 tokens.
-"""
+"""NVMe-Paged 128K Key-Value Cache Engine (CraxyPagedKV). Breaks 128K context memory wall within 2,048 MB RAM ceiling."""
 
 import math
 import os
 import tempfile
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
 
-from src.craxy_ai.config import DEFAULT_MODEL_CONFIG, ModelArchitectureConfig
+from src.craxy_ai.config import DEFAULT_MODEL_CONFIG
 from src.craxy_ai.core.paged_kv_types import (
     BlockOutOfBoundsError,
     CacheStorageIOError,
