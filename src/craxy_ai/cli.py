@@ -1,10 +1,11 @@
 """Command-Line Interface (CLI) for Craxy-AI.
 
-Implements Milestone 6 and Phase 5 Production CLI Exposure:
+Implements Milestone 6, Phase 5, and Phase 6 Frontier CLI Exposure:
 - Displays system physical boundaries, component dimensions, and real-time memory headroom.
 - Executes queries through the Tri-Tier Unified Pipeline with optional GGUF or Paged KV.
 - Validates and sandboxes code patches via embedded CraxyCodeAgent.
 - Runs comprehensive evaluation suites (GSM8K, MMLU, HumanEval) with telemetry tables.
+- Launches interactive terminal chat session (--chat) with 128K context paged memory.
 """
 
 import argparse
@@ -12,10 +13,14 @@ import os
 import shutil
 import sys
 import tempfile
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
-from src.craxy_ai.benchmarks.runner import BenchmarkReport, BenchmarkSuiteRunner
-from src.craxy_ai.config import SYSTEM_LIMITS, CraxySystemLimits
+from src.craxy_ai.benchmarks.runner import BenchmarkSuiteRunner
+from src.craxy_ai.cli_helpers import (
+    display_info,
+    print_benchmark_table,
+    print_query_output,
+)
 from src.craxy_ai.memory.retriever import MemoryMappedRetriever
 from src.craxy_ai.pipeline import CraxyPipeline, PipelineOutput
 from src.craxy_ai.tools.code_agent import CraxyCodeAgent
@@ -34,6 +39,11 @@ def _add_primary_modes(parser: argparse.ArgumentParser) -> None:
         type=str,
         metavar="TEXT",
         help="Execute a prompt through the unified Tri-Tier inference pipeline."
+    )
+    group.add_argument(
+        "--chat",
+        action="store_true",
+        help="Launch interactive terminal multi-turn chat session."
     )
     group.add_argument(
         "--benchmark",
@@ -108,56 +118,6 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def display_info(limits: CraxySystemLimits = SYSTEM_LIMITS) -> int:
-    """Print system limits, component dimensions, and physical RAM headroom."""
-    pipeline = CraxyPipeline(limits=limits)
-    mem = pipeline.get_memory_summary()
-
-    print("=" * 65)
-    print("Craxy-AI Engine: Physical Architecture & Memory Boundaries")
-    print("=" * 65)
-    print(f"Max RAM RSS Budget:             {limits.max_ram_rss_mb:.1f} MB (2.0 GB)")
-    print(f"Max Storage Budget:             {limits.max_storage_bytes / (10**9):.1f} GB NVMe")
-    print(f"Max Prefill Chunk Size:         {limits.max_prefill_chunk_tokens} tokens")
-    print(f"Min Retrieval Cosine Gate:      tau >= {limits.min_retrieval_similarity_threshold}")
-    print(f"Max Context Window:             {limits.max_context_window_tokens} tokens")
-    print("-" * 65)
-    print("Phase 2 Optimizations:")
-    print("  * Speculative Early Exit:     Layer 14/28 (50% latency saved on aligned tokens)")
-    print("  * On-Disk Graph Index:        DiskANN Vamana (sub-2.0 ms beam routing)")
-    print("  * SafeLogicEvaluator:         10k step bounded AST sandbox")
-    print("-" * 65)
-    print("Phase 3 & 4 Frontier Capabilities:")
-    print("  * NVMe Paged KV Cache (NVMe-Paged KV Cache): 128K context (131,072 max tokens, <= 120 MB RAM)")
-    print("  * Autonomous Code Agent:      Atomic multi-file AST sandbox & rollback")
-    print("  * Quantized GGUF Engine:      CPU llama.cpp with 1,500 MB RAM watchdog")
-    print("  * Tri-Tier Unified Control:   Zero-copy RAG + AST math + logic tools")
-    print("-" * 65)
-    print(f"Core INT4 Weights Footprint:    {mem['core_int4_mb']:.1f} MB")
-    print(f"Bounded INT8 KV Cache Footprint:{mem['kv_cache_mb']:.1f} MB")
-    print(f"Current Process RSS:            {mem['current_rss_mb']:.1f} MB")
-    print(f"Remaining Headroom to Budget:   {mem['headroom_mb']:.1f} MB")
-    print("=" * 65)
-    return 0
-
-
-def _print_query_output(output: PipelineOutput) -> None:
-    """Format and display pipeline query telemetry."""
-    print("-" * 65)
-    print("Craxy-AI Inference Output:")
-    print(f"Response:               {output.response}")
-    print(f"Engine Type:            {output.model_engine_type}")
-    print(f"RAG Augmented:          {output.retrieval_augmented} ({output.retrieved_chunks_count} chunks)")
-    print(f"Tool Dispatches:        {len(output.tool_calls)} executed")
-    for call in output.tool_calls:
-        print(f"  * [{call['tool']}] payload: {call.get('payload', '')} -> result: {call['output']}")
-    print(f"Tokens Generated:       {output.tokens_generated}")
-    print(f"Context Tokens Used:    {output.context_tokens_used}")
-    print(f"Total Latency:          {output.total_latency_ms:.2f} ms")
-    print(f"Peak Process RSS:       {output.peak_rss_mb:.2f} MB (Budget <= 2048 MB)")
-    print("-" * 65)
-
-
 def _init_query_pipeline(
     storage_dir: Optional[str],
     use_gguf: bool,
@@ -201,7 +161,7 @@ def execute_query(
     )
     try:
         output: PipelineOutput = pipeline.run_query(user_prompt=query_text, use_gguf=bool(use_gguf or gguf_path))
-        _print_query_output(output)
+        print_query_output(output)
         return 0
     except Exception as err:
         print("-" * 65)
@@ -238,16 +198,6 @@ def execute_code_patch(code_text: str) -> int:
         return 1
 
 
-def _print_benchmark_table(reports: Dict[str, BenchmarkReport]) -> None:
-    """Display formatted tabular benchmark results."""
-    print(f"{'Benchmark':<24} | {'Tasks':<6} | {'Passed':<6} | {'Accuracy':<10} | {'Throughput':<14} | {'Budget Status'}")
-    print("-" * 85)
-    for name, rep in reports.items():
-        status = "PASS (<= 2GB)" if rep.fits_in_2gb_budget else "FAIL (> 2GB)"
-        print(f"{name:<24} | {rep.total_tasks:<6} | {rep.passed_tasks:<6} | {rep.accuracy_pct:>6.1f}%    | {rep.tokens_per_sec:>6.1f} tok/s   | {status}")
-    print("=" * 85)
-
-
 def execute_benchmark(storage_dir: Optional[str] = None) -> int:
     """Run all benchmark suites and display performance summary table."""
     retriever = None
@@ -261,8 +211,22 @@ def execute_benchmark(storage_dir: Optional[str] = None) -> int:
     print("Executing Craxy-AI Standardized Benchmarks (GSM8K, MMLU, HumanEval)...")
     print("=" * 85)
     reports = runner.run_all()
-    _print_benchmark_table(reports)
+    print_benchmark_table(reports)
     return 0
+
+
+def _handle_chat(args: argparse.Namespace) -> int:
+    """Launch interactive terminal chat session with parsed configuration."""
+    from src.craxy_ai.chat import run_interactive_chat
+    from src.craxy_ai.chat_types import ChatConfig
+    cfg = ChatConfig(
+        use_gguf=bool(args.use_gguf),
+        gguf_path=args.use_gguf if isinstance(args.use_gguf, str) else args.gguf_path,
+        use_paged_kv=bool(args.use_paged_kv),
+        paged_kv_dir=args.use_paged_kv if isinstance(args.use_paged_kv, str) else args.paged_kv_dir,
+        storage_dir=args.storage_dir,
+    )
+    return run_interactive_chat(config=cfg)
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -272,6 +236,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.info:
         return display_info()
+    if args.chat:
+        return _handle_chat(args)
     if args.query:
         is_gguf = bool(args.use_gguf)
         gguf_p = args.use_gguf if isinstance(args.use_gguf, str) else args.gguf_path

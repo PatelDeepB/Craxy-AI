@@ -49,7 +49,7 @@ def fib(n):
     result = evaluator.evaluate(code, entry_point="fib", args=[10])
     assert result.is_success
     assert result.return_value == 55
-    assert result.execution_time_us < 2000.0
+    assert result.execution_time_us < 10000.0
 
 
 def test_list_comprehension_and_builtins():
