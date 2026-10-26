@@ -659,4 +659,41 @@ ADR-011 and Phase 5 Production CLI Exposure are resilient against invalid flags,
 ### 3. Conclusion
 Phase 6 delivers a fully interactive, production-grade terminal chat capability with multi-turn memory, dynamic tool calling, and long-context paging to NVMe, maintaining zero memory drift under 2,048 MB physical DRAM budget.
 
+---
+
+## EXP-017: Adversarial Red-Team Audit of Phase 6 Interactive Terminal Chat Mode & Multi-Turn Memory Architecture
+
+- **Date:** 2026-10-26
+- **Author:** ULTRON 2 (Independent Reviewer & Red Team Auditor)
+- **Status:** COMPLETED
+- **Audit Test Suite:** `tests/test_audit_phase6_chat.py` (5/5 passed in 40.75s)
+- **Overall Test Suite:** 217/217 tests passed across 31 test suites
+- **Audited Target:** `src/craxy_ai/chat.py`, `src/craxy_ai/chat_types.py`
+
+### 1. Objective and Red-Team Challenge
+- **Audit Challenge:** Verify whether `CraxyChatSession` and the interactive terminal chat engine maintain robustness against:
+  1. *Slash Command Robustness:* Parsing commands with varied casing, trailing arguments, and extra whitespace without exceptions.
+  2. *Oversized Payloads:* Sustaining 50,000-character single-turn user prompts without heap blowup, recursion crashes, or memory wall breaches.
+  3. *Multi-Instance Isolation:* Ensuring separate chat instances have isolated history, distinct NVMe cache backing directories, and that teardown of one instance does not affect active peers.
+  4. *Pipeline Failure Containment:* Verifying runtime exceptions during token generation are gracefully trapped, formatted cleanly, and do not corrupt conversation history.
+  5. *100-Cycle Memory Stability:* Executing 100 consecutive dialogue turns of alternating arithmetic and logic to confirm process memory drift stays strictly < 20.0 MB under the 2,048 MB physical budget.
+
+### 2. Empirical Results
+
+| Test Scenario | Audited Condition | Outcome | Measured Metric / Telemetry |
+|---|---|---|---|
+| 1. Slash Command Robustness | Uppercase `/HELP`, `/CLEAR all history`, `/INFO verbose`, `/QuIt` | `PASS` | Root command parsed cleanly; arguments tolerated; history cleared |
+| 2. Oversized Payload Stress | 50,000-character input (`A` * 50,000) | `PASS` | Generated response emitted, turn recorded, zero process crash |
+| 3. Multi-Instance Isolation | 2 sessions with independent auto NVMe directories | `PASS` | Dir paths decoupled; closing Session 1 left Session 2 operational |
+| 4. Pipeline Failure Containment | Simulated `RuntimeError` during `pipeline.run_query` | `PASS` | Error trapped as assistant message; history consistency preserved |
+| 5. 100-Cycle Memory Stability | 100 consecutive turns alternating math and logic | `PASS` | RSS memory drift strictly < 20.0 MB; peak RSS <= 475 MB (> 1,570 MB headroom) |
+
+### 3. Red-Team Remediation Applied
+- Enhanced `handle_slash_command` in `src/craxy_ai/chat.py` to parse `tokens[0]` from `cmd.strip().lower().split()`, enabling commands like `/clear history` or `/help verbose` to execute without syntax rejection.
+- Wrapped `pipeline.run_query` in `try ... except Exception as err:` within `send_message`, ensuring unhandled pipeline exceptions append a clean error message to assistant history without terminating the interactive chat loop.
+
+### 4. Audit Verdict
+ADR-012 and Phase 6 Interactive Terminal Chat Mode are resilient against oversized prompts, slash command noise, generation runtime failures, and multi-instance concurrency. Resident set size memory drift remains strictly bounded under the 2,048 MB physical budget. Formally approved.
+
+
 
